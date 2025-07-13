@@ -1,7 +1,7 @@
 import assert from 'assert';
 import Element from '../../lib/recurly/element';
 import Elements from '../../lib/recurly/elements';
-import { initRecurly } from './support/helpers';
+import { initCheckout } from './support/helpers';
 
 const noop = () => {};
 
@@ -11,7 +11,7 @@ describe('Elements', function () {
   }
 
   beforeEach(function () {
-    const recurly = this.recurly = initRecurly();
+    const recurly = this.recurly = initCheckout();
     this.elements = new Elements({ recurly });
 
     // This stub allows us to generate inert Element instances

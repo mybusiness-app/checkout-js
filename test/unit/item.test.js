@@ -1,11 +1,11 @@
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 
-describe('Recurly.item', () => {
+describe('Checkout.item', () => {
   beforeEach(function () {
     this.sandbox = sinon.createSandbox();
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
     this.valid = { itemCode: 'basic-item' };
     this.invalid = { itemCode: 'invalid' };
   });
@@ -15,9 +15,9 @@ describe('Recurly.item', () => {
     assert.throws(() => recurly.item(), { message: 'Option itemCode must be a String' });
   });
 
-  it('requires Recurly.configure', function (done) {
+  it('requires Checkout.configure', function (done) {
     const { sandbox, valid } = this;
-    const recurly = new Recurly();
+    const recurly = new Checkout();
     const stub = sandbox.stub();
     recurly.item(valid)
       .then(stub)

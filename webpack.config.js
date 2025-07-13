@@ -1,11 +1,11 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const minify = ~process.argv.indexOf('production');
 const manifest = require('./package.json');
 
-const ATTRIBUTION_URL = 'https://docs.recurly.com/page/open-source-attribution';
+const ATTRIBUTION_URL = 'https://docs.mybusinessapp.co.za/page/open-source-attribution';
 
 module.exports = {
   node: {
@@ -16,8 +16,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'build'),
     publicPath: '/build/',
-    filename: 'recurly' + (minify ? '.min.js' : '.js'),
-    library: 'recurly',
+    filename: 'checkout' + (minify ? '.min.js' : '.js'),
+    library: 'checkout',
     libraryExport: 'default'
   },
   module: {
@@ -63,7 +63,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: 'recurly.css' })
+    new MiniCssExtractPlugin({ filename: 'checkout.css' })
   ],
   optimization: {
     minimizer: [

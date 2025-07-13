@@ -1,5 +1,5 @@
 FROM node:lts-alpine
-LABEL app=recurly-js
+LABEL app=checkout-js
 
 RUN apk add --no-cache \
     make \

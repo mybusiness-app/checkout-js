@@ -1,10 +1,10 @@
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
+import { Checkout } from '../../lib/recurly';
 
-describe('Recurly.validate', function () {
+describe('Checkout.validate', function () {
   let recurly;
 
-  beforeEach(() => recurly = new Recurly);
+  beforeEach(() => recurly = new Checkout);
 
   describe('cardNumber', function () {
     it('returns true for valid card numbers', function () {

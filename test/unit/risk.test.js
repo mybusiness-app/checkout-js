@@ -1,14 +1,14 @@
 import assert from 'assert';
 import Promise from 'promise';
 import errors from '../../lib/recurly/errors';
-import { initRecurly } from './support/helpers';
+import { initCheckout } from './support/helpers';
 import { factory, Risk } from '../../lib/recurly/risk';
 import RiskConcern from '../../lib/recurly/risk/risk-concern';
 import { ThreeDSecure } from '../../lib/recurly/risk/three-d-secure/three-d-secure';
 
 describe('Risk', function () {
   beforeEach(function () {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
     this.risk = this.recurly.Risk();
     this.sandbox = sinon.createSandbox();
   });
@@ -22,7 +22,7 @@ describe('Risk', function () {
       assert.strictEqual(factory() instanceof Risk, true);
     });
 
-    it('sets its Recurly reference from the calling context', function () {
+    it('sets its Checkout reference from the calling context', function () {
       const stub = {};
       const risk = factory.call(stub);
       assert.strictEqual(risk.recurly, stub);
@@ -68,7 +68,7 @@ describe('Risk', function () {
     beforeEach(function () {
       const { sandbox } = this;
       this.bin = '411111';
-      this.recurly = initRecurly({ publicKey: 'test-preflight-key' });
+      this.recurly = initCheckout({ publicKey: 'test-preflight-key' });
       this.stubPreflightResults = { risk: [{ arbitrary: 'results' }], tokenType: undefined };
       sandbox.stub(ThreeDSecure, 'preflight').usingPromise(Promise).resolves(this.stubPreflightResults);
     });

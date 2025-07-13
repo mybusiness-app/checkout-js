@@ -23,8 +23,8 @@ if [ "$part" != "patch" ] && [ "$part" != "minor" ] && [ "$part" != "major" ]; t
   exit 1
 fi
 
-LIB_ARTIFACT=./build/recurly.min.js
-VERSION_FILE=./lib/recurly/version.js
+LIB_ARTIFACT=./build/checkout.min.js
+VERSION_FILE=./lib/checkout/version.js
 
 # Bump version
 old_version=$(jq -r '.version' < package.json)

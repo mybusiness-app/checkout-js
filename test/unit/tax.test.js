@@ -1,10 +1,10 @@
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 
 const sinon = window.sinon;
 
-describe('Recurly.tax', function () {
+describe('Checkout.tax', function () {
   let recurly;
 
   const us = {
@@ -19,7 +19,7 @@ describe('Recurly.tax', function () {
     postal_code: 'A1A 1A1'
   };
 
-  beforeEach(() => recurly = initRecurly());
+  beforeEach(() => recurly = initCheckout());
 
   it('requires a callback', function () {
     try {
@@ -29,9 +29,9 @@ describe('Recurly.tax', function () {
     }
   });
 
-  it('requires Recurly.configure', function () {
+  it('requires Checkout.configure', function () {
     try {
-      recurly = new Recurly();
+      recurly = new Checkout();
       recurly.tax(us, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));

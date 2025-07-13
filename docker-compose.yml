@@ -1,5 +1,5 @@
 services:
-  recurly-js:
+  checkout-js:
     build: .
     ports:
       - "8020:8020"

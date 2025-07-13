@@ -2,11 +2,11 @@ import assert from 'assert';
 import after from 'lodash.after';
 import clone from 'component-clone';
 import Promise from 'promise';
-import { Recurly } from '../../lib/recurly';
+import { Checkout } from '../../lib/recurly';
 import { applyFixtures } from './support/fixtures';
-import { initRecurly, testBed } from './support/helpers';
+import { initCheckout, testBed } from './support/helpers';
 
-describe('Recurly.token', function () {
+describe('Checkout.token', function () {
   // Some of these tests can take a while to stand up fields and receive reponses
   this.timeout(15000);
 
@@ -27,21 +27,21 @@ describe('Recurly.token', function () {
   };
 
   describe('without markup', function () {
-    buildRecurly();
+    buildCheckout();
 
     it('requires a callback', function () {
       assert.throws(() => this.recurly.token(clone(valid)), /callback/);
     });
 
-    it('requires Recurly.configure', function () {
-      const recurly = new Recurly();
+    it('requires Checkout.configure', function () {
+      const recurly = new Checkout();
       assert.throws(() => recurly.token(clone(valid), () => {}), /configure/);
     });
   });
 
   describe('when using minimal markup', function () {
     applyFixtures();
-    buildRecurly();
+    buildCheckout();
 
     this.ctx.fixture = 'minimal';
 
@@ -68,7 +68,7 @@ describe('Recurly.token', function () {
 
   describe('when using all markup', function () {
     applyFixtures();
-    buildRecurly();
+    buildCheckout();
 
     this.ctx.fixture = 'all';
 
@@ -90,7 +90,7 @@ describe('Recurly.token', function () {
 
   describe('when behaving as an element/hosted field', function () {
     applyFixtures();
-    buildRecurly();
+    buildCheckout();
 
     this.ctx.fixture = 'minimal';
 
@@ -104,7 +104,7 @@ describe('Recurly.token', function () {
   describe('tokenizing elements', function () {
     describe('when called with an HTMLFormElement containing no tokenizing Elements', function () {
       applyFixtures();
-      buildRecurly();
+      buildCheckout();
 
       this.ctx.fixture = 'elements';
 
@@ -129,7 +129,7 @@ describe('Recurly.token', function () {
 
   describe('Cvv standalone', function () {
     applyFixtures();
-    buildRecurly();
+    buildCheckout();
 
     describe('when using a HostedField', function () {
       this.ctx.fixture = () => `
@@ -176,9 +176,9 @@ describe('Recurly.token', function () {
     });
   });
 
-  function buildRecurly (opts) {
+  function buildCheckout (opts) {
     beforeEach(function (done) {
-      this.recurly = initRecurly(opts);
+      this.recurly = initCheckout(opts);
       this.recurly.ready(() => done());
     });
 
@@ -444,7 +444,7 @@ describe('Recurly.token', function () {
       beforeEach(function (done) {
         // This test is to be performed on parents only
         if (!this.recurly.isParent) return done();
-        this.recurly = initRecurly({
+        this.recurly = initCheckout({
           cors: this.recurly.config.cors,
           fraud: {
             kount: {
@@ -648,7 +648,7 @@ describe('Recurly.token', function () {
   function tokenAllMarkupSuite (builder) {
     describe('when given additional required fields', function () {
       beforeEach(function (done) {
-        this.recurly = initRecurly({
+        this.recurly = initCheckout({
           required: ['country', 'postal_code', 'unrelated_configured_field']
         });
         this.recurly.ready(done);

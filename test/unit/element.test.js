@@ -2,7 +2,7 @@ import { applyFixtures } from './support/fixtures';
 import assert from 'assert';
 import Element from '../../lib/recurly/element';
 import Elements from '../../lib/recurly/elements';
-import { initRecurly, createNativeEvent, stubAsNonMobileDevice, stubAsMobileDevice } from './support/helpers';
+import { initCheckout, createNativeEvent, stubAsNonMobileDevice, stubAsMobileDevice } from './support/helpers';
 
 describe('Element', function () {
   class ElementsStub extends Elements {
@@ -14,7 +14,7 @@ describe('Element', function () {
   this.ctx.fixture = 'elements';
 
   beforeEach(function () {
-    const recurly = this.recurly = initRecurly();
+    const recurly = this.recurly = initCheckout();
     const elements = this.elements = new ElementsStub({ recurly });
     const validConfig = this.validConfig = {
       displayIcon: true,

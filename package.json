@@ -1,12 +1,12 @@
 {
-  "name": "recurly.js",
-  "description": "Zen subscription billing in the browser",
-  "version": "4.37.1",
+  "name": "checkout.js",
+  "description": "Simple subscription billing in the browser",
+  "version": "1.0.0",
   "license": "MIT",
-  "main": "recurly.js",
+  "main": "checkout.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/recurly/recurly-js.git"
+    "url": "git://github.com/mybusiness-app/checkout-js.git"
   },
   "workspaces": [
     "packages/*"

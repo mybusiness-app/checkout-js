@@ -1,13 +1,13 @@
 import assert from 'assert';
 import isEmpty from 'lodash.isempty';
 import Promise from 'promise';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 import { Request } from '../../lib/recurly/request';
 
 describe('Request', () => {
   beforeEach(function () {
-    const recurly = this.recurly = initRecurly();
+    const recurly = this.recurly = initCheckout();
     this.request = new Request({ recurly });
   });
 
@@ -40,7 +40,7 @@ describe('Request', () => {
   });
 
   describe('Request.version', () => {
-    describe('when Recurly is configured as a parent', () => {
+    describe('when Checkout is configured as a parent', () => {
       it('returns recurly.version', function () {
         assert.strictEqual(this.request.version, this.recurly.version);
         this.recurly.configure({ publicKey: 'test-value' });
@@ -48,9 +48,9 @@ describe('Request', () => {
       });
     });
 
-    describe('when Recurly is configured as a dependent', () => {
+    describe('when Checkout is configured as a dependent', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initRecurly({ parent: false, parentVersion: 'test-parent-version' });
+        const recurly = this.recurly = initCheckout({ parent: false, parentVersion: 'test-parent-version' });
         this.request = new Request({ recurly });
       });
 
@@ -134,25 +134,25 @@ describe('Request', () => {
       beforeEach(function () { sinon.spy(this.request, 'xhr'); });
       afterEach(function () { this.request.xhr.restore(); });
 
-      it('Applies Recurly.version to the request', function () {
+      it('Applies Checkout.version to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
         assert(this.request.xhr.calledWithMatch({ data: { example: 0, version: this.recurly.version } }));
       });
 
-      it('Applies Recurly.key to the request', function () {
+      it('Applies Checkout.key to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
         assert(this.request.xhr.calledWithMatch({ data: { example: 0, key: this.recurly.config.publicKey } }));
       });
 
-      it('Applies Recurly.deviceId to the request', function () {
+      it('Applies Checkout.deviceId to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
         assert(this.request.xhr.calledWithMatch({ data: { example: 0, deviceId: this.recurly.deviceId } }));
       });
 
-      it('Applies Recurly.sessionId to the request', function () {
+      it('Applies Checkout.sessionId to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
         assert(this.request.xhr.calledWithMatch({ data: { example: 0, sessionId: this.recurly.sessionId } }));
@@ -161,7 +161,7 @@ describe('Request', () => {
 
     describe('when configured for jsonp requests', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initRecurly({ cors: false });
+        const recurly = this.recurly = initCheckout({ cors: false });
         this.request = new Request({ recurly });
       });
 
@@ -178,7 +178,7 @@ describe('Request', () => {
 
     describe('when configured for XHR requests', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initRecurly({ cors: true });
+        const recurly = this.recurly = initCheckout({ cors: true });
         this.request = new Request({ recurly });
       });
 
@@ -290,7 +290,7 @@ describe('Request', () => {
           it('Applies the hostname as a header', function () {
             this.recurly.configure({ hostname: 'test-hostname.recurly.com' });
             this.request.request({ method: 'get', route: 'test' });
-            assert(this.XHR.prototype.setRequestHeader.calledWithMatch('Recurly-Credential-Checkout-Hostname', 'test-hostname.recurly.com'));
+            assert(this.XHR.prototype.setRequestHeader.calledWithMatch('Checkout-Credential-Checkout-Hostname', 'test-hostname.recurly.com'));
           });
         });
       });
@@ -352,7 +352,7 @@ describe('Request', () => {
 
     describe('when recurly is not configured', () => {
       beforeEach(function () {
-        const recurly = this.recurly = new Recurly;
+        const recurly = this.recurly = new Checkout;
         this.request = new Request({ recurly });
       });
 
@@ -370,7 +370,7 @@ describe('Request', () => {
         assert.strictEqual(this.recurly.listeners('configured').length, 0);
         this.request.queued(args).then(step);
         assert.strictEqual(this.recurly.listeners('configured').length, 1);
-        initRecurly(this.recurly);
+        initCheckout(this.recurly);
       });
     });
 

@@ -1,10 +1,10 @@
 import assert from 'assert';
-import { initRecurly } from './support/helpers';
+import { initCheckout } from './support/helpers';
 
-describe('Recurly.Adyen', function () {
+describe('Checkout.Adyen', function () {
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.adyen = this.recurly.Adyen();
+    this.checkout = initCheckout();
+    this.adyen = this.checkout.Adyen();
   });
 
   let validPayload = {

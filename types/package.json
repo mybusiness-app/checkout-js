@@ -1,14 +1,14 @@
 {
     "private": true,
-    "name": "@types/recurly__recurly-js",
-    "version": "4.37.9999",
+    "name": "@types/mybusinessapp__checkout-js",
+    "version": "1.0.0",
     "nonNpm": true,
-    "nonNpmDescription": "@recurly/recurly-js",
+    "nonNpmDescription": "@mybusinessapp/checkout-js",
     "projects": [
-        "https://github.com/recurly/recurly-js"
+        "https://github.com/mybusinessapp/checkout-js"
     ],
     "devDependencies": {
-        "@types/recurly__recurly-js": "workspace:."
+        "@types/mybusinessapp__checkout-js": "workspace:."
     },
     "owners": [
         {

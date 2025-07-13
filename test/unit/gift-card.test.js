@@ -1,14 +1,14 @@
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 
-describe('Recurly.giftCard', function () {
+describe('Checkout.giftCard', function () {
   const valid = { code: 'super-gift-card' };
   const invalid = { code: 'invalid' };
   let recurly;
 
   beforeEach(function () {
-    recurly = initRecurly();
+    recurly = initCheckout();
   });
 
   it('requires a callback', function () {
@@ -23,9 +23,9 @@ describe('Recurly.giftCard', function () {
     assert.throws(() => recurly.giftCard({ arbitrary: 'values' }, () => {}), { message: 'Option code must be a String' });
   });
 
-  it('requires Recurly.configure', function () {
+  it('requires Checkout.configure', function () {
     try {
-      recurly = new Recurly();
+      recurly = new Checkout();
       recurly.giftCard(valid, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));

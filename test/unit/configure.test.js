@@ -2,14 +2,14 @@ import each from 'lodash.foreach';
 import clone from 'component-clone';
 import assert from 'assert';
 import combinations from 'combinations';
-import { initRecurly, nextTick, testBed } from './support/helpers';
+import { initCheckout, nextTick, testBed } from './support/helpers';
 import { applyFixtures } from './support/fixtures';
-import { Recurly } from '../../lib/recurly';
+import { Checkout } from '../../lib/recurly';
 
-describe('Recurly.configure', function () {
+describe('Checkout.configure', function () {
   beforeEach(function () {
     this.api = `${window.location.protocol}//${window.location.host}/api`;
-    this.recurly = new Recurly();
+    this.recurly = new Checkout();
   });
 
   describe('when options.publicKey is not given', function () {
@@ -31,7 +31,7 @@ describe('Recurly.configure', function () {
       });
     });
 
-    it('Recurly.configured remains false', function () {
+    it('Checkout.configured remains false', function () {
       const { examples, recurly } = this;
       examples.forEach(opts => {
         try {
@@ -54,10 +54,10 @@ describe('Recurly.configure', function () {
       ];
     });
 
-    it('sets Recurly.config to the options given', function () {
+    it('sets Checkout.config to the options given', function () {
       const { examples } = this;
       examples.forEach((opts) => {
-        const recurly = new Recurly();
+        const recurly = new Checkout();
         recurly.configure(opts);
         each(opts, (val, opt) => {
           if (opts[opt]) assert.equal(JSON.stringify(recurly.config[opt]), JSON.stringify(val));
@@ -68,7 +68,7 @@ describe('Recurly.configure', function () {
     it('sets default values for options not given', function () {
       const { examples } = this;
       examples.forEach(opts => {
-        const recurly = new Recurly();
+        const recurly = new Checkout();
         recurly.configure(opts);
         each(recurly.config, (val, opt) => {
           if (opts[opt]) {
@@ -82,7 +82,7 @@ describe('Recurly.configure', function () {
     });
 
     describe('when options.api is given', function () {
-      it('sets Recurly.config.api to the given api', function () {
+      it('sets Checkout.config.api to the given api', function () {
         const { recurly } = this;
         recurly.configure({ publicKey: 'foo', api: 'http://localhost' });
         assert.strictEqual(recurly.config.api, 'http://localhost');
@@ -90,7 +90,7 @@ describe('Recurly.configure', function () {
     });
 
     describe('when options.cors is given', function () {
-      it('sets Recurly.config.cors to the given value', function () {
+      it('sets Checkout.config.cors to the given value', function () {
         const { recurly } = this;
         recurly.configure({ publicKey: 'foo', cors: true });
         assert.strictEqual(recurly.config.cors, true);
@@ -272,11 +272,11 @@ describe('Recurly.configure', function () {
       const numberOne = testBed().querySelector('#number-1');
       const numberTwo = testBed().querySelector('#number-2');
 
-      configureRecurly(recurly, '1', () => nextTick(() => {
+      configureCheckout(recurly, '1', () => nextTick(() => {
         assert.strictEqual(numberOne.children.length, 1);
         assert.strictEqual(numberTwo.children.length, 0);
         assert(numberOne.querySelector('iframe') instanceof HTMLIFrameElement);
-        configureRecurly(recurly, '2', () => nextTick(() => {
+        configureCheckout(recurly, '2', () => nextTick(() => {
           assert.strictEqual(numberOne.children.length, 0);
           assert.strictEqual(numberTwo.children.length, 1);
           assert(numberTwo.querySelector('iframe') instanceof HTMLIFrameElement);
@@ -285,8 +285,8 @@ describe('Recurly.configure', function () {
       }));
     });
 
-    function configureRecurly (recurly, index, done) {
-      initRecurly(recurly, {
+    function configureCheckout (recurly, index, done) {
+      initCheckout(recurly, {
         fields: {
           number: `#number-${index}`,
           month: `#month-${index}`,

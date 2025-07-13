@@ -2,17 +2,17 @@ import assert from 'assert';
 import clone from 'component-clone';
 import after from 'lodash.after';
 import merge from 'lodash.merge';
-import { Recurly } from '../../lib/recurly';
+import { Checkout } from '../../lib/recurly';
 import { fixture } from './support/fixtures';
-import { initRecurly, testBed } from './support/helpers';
+import { initCheckout, testBed } from './support/helpers';
 
-describe('Recurly.bankAccount', function () {
+describe('Checkout.bankAccount', function () {
   beforeEach(function (done) {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
     this.recurly.ready(done);
   });
 
-  describe('Recurly.bankAccount.token', function () {
+  describe('Checkout.bankAccount.token', function () {
     const valid = {
       routing_number: '123456780',
       account_number: '1987649876',
@@ -31,9 +31,9 @@ describe('Recurly.bankAccount', function () {
       }
     });
 
-    it('requires Recurly.configure', function () {
+    it('requires Checkout.configure', function () {
       try {
-        const recurly = new Recurly();
+        const recurly = new Checkout();
         recurly.bankAccount.token(valid, function () {});
       } catch (e) {
         assert(~e.message.indexOf('configure'));
@@ -170,7 +170,7 @@ describe('Recurly.bankAccount', function () {
     }
   });
 
-  describe('Recurly.bankAccount.bankInfo', function () {
+  describe('Checkout.bankAccount.bankInfo', function () {
     context('Bacs Bank Account', function () {
       it('requires a account_number_confirmation', function (done) {
         const { recurly } = this;

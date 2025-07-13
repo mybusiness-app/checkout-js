@@ -10,8 +10,8 @@ dtslint = $(bin)/dtslint
 src = index.js $(shell find . -type f -name '*.js' ! -path './build/*' -o -name '*.css' ! -path './build/*')
 tests = $(shell find test -type f -name '*.js')
 
-ifdef RECURLY_JS_CERT
-	server_opts = --server-type https --server-options-cert $(RECURLY_JS_CERT) --server-options-key $(RECURLY_JS_KEY)
+ifdef CHECKOUT_JS_CERT
+	server_opts = --server-type https --server-options-cert $(CHECKOUT_JS_CERT) --server-options-key $(CHECKOUT_JS_KEY)
 else
 	server_opts = --server-type http
 endif
@@ -21,11 +21,11 @@ server: build
 server-http: build
 	@$(server)
 
-build: build/recurly.min.js
-build/recurly.js: index.js $(src) node_modules
+build: build/checkout.min.js
+build/checkout.js: index.js $(src) node_modules
 	@mkdir -p $(@D)
 	@$(webpack)
-build/recurly.min.js: build/recurly.js
+build/checkout.min.js: build/checkout.js
 	@$(webpack) --mode production
 build/test-unit.js: $(src) $(tests)
 	@$(webpack) --config webpack.test.config.js

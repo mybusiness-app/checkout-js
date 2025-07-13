@@ -5,7 +5,7 @@ import merge from 'lodash.merge';
 import omit from 'lodash.omit';
 import Emitter from 'component-emitter';
 import Promise from 'promise';
-import { initRecurly, nextTick, testBed } from './support/helpers';
+import { initCheckout, nextTick, testBed } from './support/helpers';
 import BraintreeLoader from '../../lib/util/braintree-loader';
 import filterSupportedNetworks from '../../lib/recurly/apple-pay/util/filter-supported-networks';
 
@@ -111,7 +111,7 @@ function applePayTest (integrationType) {
   const isDirectIntegration = integrationType === INTEGRATION.DIRECT;
   const isBraintreeIntegration = integrationType === INTEGRATION.BRAINTREE;
 
-  describe(`Recurly.ApplePay ${integrationType}`, function () {
+  describe(`Checkout.ApplePay ${integrationType}`, function () {
     let validOpts = {
       country: 'US',
       currency: 'USD',
@@ -122,7 +122,7 @@ function applePayTest (integrationType) {
     };
 
     beforeEach(function () {
-      this.recurly = initRecurly();
+      this.recurly = initCheckout();
       if (isBraintreeIntegration) {
         window.braintree = getBraintreeStub();
       }
@@ -1287,7 +1287,7 @@ function applePayTest (integrationType) {
 
           it('when kount is selected, pass the expected parameters to create the token', function (done) {
             beforeEach(function () {
-              const recurly = this.recurly = initRecurly();
+              const recurly = this.recurly = initCheckout();
               recurly.configure({
                 fraud: {
                   kount: {

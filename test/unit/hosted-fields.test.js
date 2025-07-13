@@ -1,15 +1,15 @@
 import assert from 'assert';
 import { applyFixtures } from './support/fixtures';
-import { initRecurly, stubAsMobileDevice } from './support/helpers';
+import { initCheckout, stubAsMobileDevice } from './support/helpers';
 import { FIELD_TYPES } from '../../lib/recurly/hosted-fields';
 
-describe('Recurly.HostedFields', function () {
+describe('Checkout.HostedFields', function () {
   applyFixtures();
 
   this.ctx.fixture = 'all';
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initRecurly();
+    const recurly = this.recurly = initCheckout();
 
     recurly.ready(() => {
       this.hostedFields = recurly.hostedFields;

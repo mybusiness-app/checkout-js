@@ -1,15 +1,15 @@
 import assert from 'assert';
 import { applyFixtures } from './support/fixtures';
-import { initRecurly, nextTick, testBed } from './support/helpers';
+import { initCheckout, nextTick, testBed } from './support/helpers';
 import { isAUid } from './support/matchers';
-import { Recurly } from '../../lib/recurly';
+import { Checkout } from '../../lib/recurly';
 import CheckoutPricing from '../../lib/recurly/pricing/checkout';
 import Elements from '../../lib/recurly/elements';
 import SubscriptionPricing from '../../lib/recurly/pricing/subscription';
 
-describe('Recurly', function () {
+describe('Checkout', function () {
   beforeEach(function () {
-    this.recurly = new Recurly;
+    this.recurly = new Checkout;
     this.sandbox = sinon.createSandbox();
   });
 
@@ -28,14 +28,14 @@ describe('Recurly', function () {
   });
 
   it('should be exposed as a window singleton', function () {
-    assert(window.recurly instanceof window.recurly.Recurly);
+    assert(window.recurly instanceof window.recurly.Checkout);
   });
 
-  describe('Recurly', function () {
-    it('is the Recurly constructor', function () {
+  describe('Checkout', function () {
+    it('is the Checkout constructor', function () {
       const { recurly } = this;
-      assert.strictEqual(recurly.Recurly, recurly.constructor);
-      assert(recurly.Recurly() instanceof Recurly);
+      assert.strictEqual(recurly.Checkout, recurly.constructor);
+      assert(recurly.Checkout() instanceof Checkout);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Recurly', function () {
       it('persists bus recipients', function () {
         const { recurly, sandbox } = this;
         const stub = sandbox.stub();
-        initRecurly(recurly);
+        initCheckout(recurly);
         recurly.bus.add(stub);
         assert.strictEqual(!!~recurly.bus.recipients.indexOf(stub), true);
         recurly.configure({ publicKey: 'test-2' });
@@ -96,7 +96,7 @@ describe('Recurly', function () {
           const readyStub = sandbox.stub();
           sandbox.spy(recurly, 'off');
           assert.strictEqual(recurly.readyState, 0);
-          initRecurly(recurly, {
+          initCheckout(recurly, {
             fields: {
               number: { selector: '#number-1' },
               month: { selector: '#month-1' },
@@ -135,32 +135,32 @@ describe('Recurly', function () {
     });
 
     describe('when switching form different keyspaces', function () {
-      const DEFAULT_API_URL = 'https://api.recurly.com/js/v1';
-      const DEFAULT_API_URL_EU = 'https://api.eu.recurly.com/js/v1';
+      const DEFAULT_API_URL = 'https://mpp-api-mybusinessapp-san.azure-api.net/js/v1';
+      const DEFAULT_API_URL_EU = 'https://mpp-api-mybusinessapp-san.azure-api.net/eu/js/v1';
       const SAMPLE_API = 'https://api.test.com';
       describe('when publicKey of merchant is from eu', function () {
         it('returns the eu api url', function () {
-          const recurly = new Recurly;
+          const recurly = new Checkout;
           recurly.configure({ publicKey: 'fra-2test2' });
           assert.strictEqual(recurly.config.api, DEFAULT_API_URL_EU);
         });
       });
       describe('when publicKey of merchant is from us', function () {
         it('returns the us api url', function () {
-          const recurly = new Recurly;
+          const recurly = new Checkout;
           recurly.configure({ publicKey: 'ewr-1test1' });
           assert.strictEqual(recurly.config.api, DEFAULT_API_URL);
         });
       });
       describe('when publicKey is from eu and api is passed', function () {
         it('returns the default api url', function () {
-          const recurly = initRecurly({ publicKey: 'fra-3test3', api: SAMPLE_API });
+          const recurly = initCheckout({ publicKey: 'fra-3test3', api: SAMPLE_API });
           assert.strictEqual(recurly.config.api, SAMPLE_API);
         });
       });
       describe('when publicKey is from us and api is passed', function () {
         it('returns the default api url', function () {
-          const recurly = initRecurly({ publicKey: 'ewr-3test3', api: SAMPLE_API });
+          const recurly = initCheckout({ publicKey: 'ewr-3test3', api: SAMPLE_API });
           assert.strictEqual(recurly.config.api, SAMPLE_API);
         });
       });
@@ -169,7 +169,7 @@ describe('Recurly', function () {
     describe('when preflightDeviceDataCollector is a boolean', function () {
       describe('and is set to true', function () {
         it('enabled is set to true', function () {
-          const recurly = new Recurly;
+          const recurly = new Checkout;
           recurly.configure(
             {
               publicKey: 'fra-2test2',
@@ -185,7 +185,7 @@ describe('Recurly', function () {
       });
       describe('and is set to false', function () {
         it('enabled is false', function () {
-          const recurly = new Recurly;
+          const recurly = new Checkout;
           recurly.configure(
             {
               publicKey: 'fra-2test2',
@@ -204,7 +204,7 @@ describe('Recurly', function () {
     describe('when proactive3ds', function () {
       describe('is set to true', function () {
         it('returns true', function () {
-          const recurly = initRecurly({
+          const recurly = initCheckout({
             risk: {
               threeDSecure: {
                 proactive: {
@@ -218,7 +218,7 @@ describe('Recurly', function () {
       });
       describe('is not set', function () {
         it('returns false', function () {
-          const recurly = initRecurly({});
+          const recurly = initCheckout({});
           assert.strictEqual(recurly.config.risk.threeDSecure.proactive.enabled, false);
         });
       });

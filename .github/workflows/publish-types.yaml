@@ -8,10 +8,10 @@ jobs:
   Publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Recurly-js
+      - name: Checkout Checkout-js
         uses: actions/checkout@v2
         with:
-          path: recurly-js
+          path: checkout-js
       - name: Checkout DefinitelyTyped
         uses: actions/checkout@v2
         with:
@@ -22,29 +22,29 @@ jobs:
       - name: Create changes
         id: create-changes
         run: |
-          rm recurly-js/test/types/tsconfig.json \
-             recurly-js/test/types/tslint.json \
-             recurly-js/test/types/index.d.ts \
-             recurly-js/types/tsconfig.json \
-             recurly-js/types/tslint.json
+          rm checkout-js/test/types/tsconfig.json \
+             checkout-js/test/types/tslint.json \
+             checkout-js/test/types/index.d.ts \
+             checkout-js/types/tsconfig.json \
+             checkout-js/types/tslint.json
 
-          cp -R recurly-js/types/* DefinitelyTyped/types/recurly__recurly-js
-          cp -R recurly-js/test/types/* DefinitelyTyped/types/recurly__recurly-js/test
+          cp -R checkout-js/types/* DefinitelyTyped/types/mybusinessapp__checkout-js
+          cp -R checkout-js/test/types/* DefinitelyTyped/types/mybusinessapp__checkout-js/test
 
-          out_version=$(cat recurly-js/package.json | jq '.version' -r )
+          out_version=$(cat checkout-js/package.json | jq '.version' -r )
           echo ::set-output name=version::$out_version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           path: DefinitelyTyped
-          commit-message: Updates recurly-js types
-          branch: update-recurly-js-${{ steps.create-changes.outputs.version }}
-          push-to-fork: recurly/DefinitelyTyped
+          commit-message: Updates checkout-js types
+          branch: update-checkout-js-${{ steps.create-changes.outputs.version }}
+          push-to-fork: checkout/DefinitelyTyped
           token: ${{ secrets.DEFINITELY_TYPED_PR_GITHUB_ACCESS_TOKEN }}
-          title: Updates types for Recurly.js v${{ steps.create-changes.outputs.version }}
+          title: Updates types for Checkout.js v${{ steps.create-changes.outputs.version }}
           body: |
-            # Updates types for Recurly.js v${{ steps.create-changes.outputs.version }}
+            # Updates types for Checkout.js v${{ steps.create-changes.outputs.version }}
 
-            View the full recurly-js release [here](https://github.com/recurly/recurly-js/releases/tag/v${{ steps.create-changes.outputs.version }})
+            View the full checkout-js release [here](https://github.com/mybusiness-app/checkout-js/releases/tag/v${{ steps.create-changes.outputs.version }})
 
-            Note: This is an automated pull request. For more info, see the [Recurly.js](https://github.com/recurly/recurly-js) repository or [documentation](https://developers.recurly.com/reference/recurly-js/index.html).
+            Note: This is an automated pull request. For more info, see the [Recurly.js](https://github.com/mybusiness-app/checkout-js) repository or [documentation](https://developers.mybusinessapp.co.za/reference/checkout-js/index.html).

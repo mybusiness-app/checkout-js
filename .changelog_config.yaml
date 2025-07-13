@@ -1,6 +1,6 @@
 ---
-owner: recurly
-repo: recurly-js
+owner: mybusiness-app
+repo: Checkout-js
 tag_matcher: ^v[34]\..*
 exclude_labels:
   - bug?

@@ -7,7 +7,7 @@ const moduleConfig = require('./webpack.config').module;
 
 if (shouldInstrument()) {
   moduleConfig.rules.find(rule => {
-    const loader = rule.use.find(use => use.loader === 'babel-loader')
+    const loader = rule.use.find(use => use.loader === 'babel-loader');
     if (!loader) return;
     loader.options.plugins.push('istanbul');
   });
@@ -30,7 +30,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: 'recurly.css' }),
+    new MiniCssExtractPlugin({ filename: 'checkout.css' }),
     new webpack.ProvidePlugin({
       process: 'process/browser',
     }),

@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { applyFixtures } from './support/fixtures';
-import { initRecurly, testBed } from './support/helpers';
+import { initCheckout, testBed } from './support/helpers';
 
-describe('Recurly.fraud', function () {
+describe('Checkout.fraud', function () {
   const kountConfiguration = {
     kount: {
       dataCollector: true
@@ -16,7 +16,7 @@ describe('Recurly.fraud', function () {
   describe('when configured to use the kount data collector', function () {
     describe('when the site does not support kount data collection', function () {
       it('emits an error on recurly', function (done) {
-        const recurly = initRecurly({
+        const recurly = initCheckout({
           publicKey: 'test-site-without-kount',
           fraud: { ...kountConfiguration }
         });
@@ -35,7 +35,7 @@ describe('Recurly.fraud', function () {
         const form = testBed().querySelector('#test-form');
         assert.strictEqual(form.children.length, 0);
 
-        const recurly = initRecurly({
+        const recurly = initCheckout({
           fraud: {
             kount: { ...kountConfiguration.kount, form }
           }
@@ -60,7 +60,7 @@ describe('Recurly.fraud', function () {
             const form = testBed().querySelector('#test-form-1');
             assert.strictEqual(form.children.length, 0);
 
-            recurly = initRecurly({
+            recurly = initCheckout({
               fraud: {
                 kount: { ...kountConfiguration.kount, form }
               }
@@ -90,7 +90,7 @@ describe('Recurly.fraud', function () {
               done();
             });
 
-            initRecurly(recurly, {
+            initCheckout(recurly, {
               fraud: {
                 kount: { ...kountConfiguration.kount, form }
               }
@@ -106,7 +106,7 @@ describe('Recurly.fraud', function () {
         const form = testBed().querySelector('#test-form');
         assert.strictEqual(form.children.length, 0);
 
-        const recurly = initRecurly({
+        const recurly = initCheckout({
           fraud: {
             kount: { ...kountConfiguration.kount, form }
           }
@@ -127,7 +127,7 @@ describe('Recurly.fraud', function () {
 
         it('uses a form occupied by any recurly.hostedFields', function (done) {
           const form = testBed().querySelector('#test-form');
-          const recurly = initRecurly({
+          const recurly = initCheckout({
             fraud: { ...kountConfiguration }
           });
 
@@ -143,7 +143,7 @@ describe('Recurly.fraud', function () {
           this.ctx.fixture = 'empty';
 
           it('emits an error', function (done) {
-            const recurly = initRecurly({
+            const recurly = initCheckout({
               fraud: { ...kountConfiguration }
             });
 
@@ -159,7 +159,7 @@ describe('Recurly.fraud', function () {
 
   describe('when configured to use the fraudnet data collector', function () {
     it('creates a data collector using the Fraudnet SDK', function (done) {
-      const recurly = initRecurly({
+      const recurly = initCheckout({
         publicKey: 'test-site-with-fraudnet-only',
       });
 
@@ -191,7 +191,7 @@ describe('Recurly.fraud', function () {
     it('removes attached collector nodes', function (done) {
       const form = testBed().querySelector('#test-form');
 
-      const recurly = initRecurly({
+      const recurly = initCheckout({
         fraud: {
           kount: { ...kountConfiguration.kount, form }
         }
@@ -208,7 +208,7 @@ describe('Recurly.fraud', function () {
 
   describe('#params', function () {
     it('gets the fraud params presented for kount', function () {
-      const recurly = initRecurly({
+      const recurly = initCheckout({
         fraud: {
           kount: {
             dataCollector: true,
@@ -233,7 +233,7 @@ describe('Recurly.fraud', function () {
     });
 
     it('gets the fraud params presented for fraudnet', function (done) {
-      const recurly = initRecurly({
+      const recurly = initCheckout({
         publicKey: 'test-site-with-fraudnet-only',
       });
 

@@ -1,13 +1,13 @@
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 
-describe('Recurly.plan', function () {
+describe('Checkout.plan', function () {
   const valid = 'basic';
   const invalid = 'invalid';
 
   beforeEach(function () {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
   });
 
   it('requires a callback', function () {
@@ -23,9 +23,9 @@ describe('Recurly.plan', function () {
     });
   });
 
-  it('requires Recurly.configure', function () {
+  it('requires Checkout.configure', function () {
     try {
-      const recurly = new Recurly();
+      const recurly = new Checkout();
       recurly.plan(valid, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));

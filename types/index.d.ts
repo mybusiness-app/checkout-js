@@ -1,11 +1,11 @@
-import { Recurly } from './lib/recurly';
+import { Checkout } from './lib/checkout';
 
 declare global {
   interface Window {
-    recurly: Recurly;
+    checkout: Checkout;
   }
 
-  const recurly: Recurly;
+  const checkout: Checkout;
 }
 
 export * from './lib/pricing/checkout';
@@ -25,6 +25,6 @@ export * from './lib/elements';
 export * from './lib/error';
 export * from './lib/gift-card';
 export * from './lib/paypal';
-export * from './lib/recurly';
+export * from './lib/checkout';
 export * from './lib/token';
 export * from './lib/validate';

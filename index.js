@@ -3,9 +3,9 @@
  * @attribution
  */
 
-import recurlyCSS from './lib/recurly.css';
-import { Recurly } from './lib/recurly';
+import checkoutCSS from './lib/checkout.css';
+import { Checkout } from './lib/checkout';
 
-const recurly = new Recurly;
+const checkout = new Checkout;
 
-export default recurly;
+export default checkout;

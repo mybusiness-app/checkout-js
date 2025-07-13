@@ -8,7 +8,7 @@ const staticConfig = {
   basePath: '',
   frameworks: ['mocha', 'sinon', 'source-map-support'],
   files: [
-    'build/recurly.js',
+    'build/checkout.js',
     'build/test-unit.js'
   ],
   proxies: {
@@ -64,7 +64,7 @@ function runner (config) {
   config.set(Object.assign({}, staticConfig, { logLevel: config.LOG_INFO }));
 }
 
-require('@recurly/public-api-test-server');
+require('@mybusinessapp/public-api-test-server');
 
 runner.staticConfig = staticConfig;
 

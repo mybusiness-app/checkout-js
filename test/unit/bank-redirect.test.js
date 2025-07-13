@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 import assert from 'assert';
 import { fixture, clearFixture } from './support/fixtures';
-import { initRecurly, testBed } from './support/helpers';
+import { initCheckout, testBed } from './support/helpers';
 
-describe('Recurly.BankRedirect', function () {
+describe('Checkout.BankRedirect', function () {
   beforeEach(function (done) {
-    this.recurly = initRecurly({ });
+    this.recurly = initCheckout({ });
     this.bankRedirect = this.recurly.BankRedirect();
     this.recurly.ready(() => done());
   });

@@ -1,9 +1,9 @@
 import { applyFixtures } from './support/fixtures';
 import assert from 'assert';
-import { initRecurly, stubWindowOpen, testBed } from './support/helpers';
+import { initCheckout, stubWindowOpen, testBed } from './support/helpers';
 import { Frame } from '../../lib/recurly/frame';
 
-describe('Recurly.Frame', function () {
+describe('Checkout.Frame', function () {
   const path = '/frame_mock';
   const payload = { example: 'data', event: 'test-event' };
 
@@ -13,7 +13,7 @@ describe('Recurly.Frame', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
     this.sandbox = sinon.createSandbox();
 
     this.sandbox.stub(window.document.body, 'appendChild').callsFake(function (maybeRelay) {
@@ -37,7 +37,7 @@ describe('Recurly.Frame', function () {
     assert(window.open.calledOnce);
   });
 
-  it('sends Recurly.version in the url', function () {
+  it('sends Checkout.version in the url', function () {
     const { recurly } = this;
     assert(window.open.calledWithMatch(`version=${recurly.version}`));
   });

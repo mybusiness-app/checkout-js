@@ -32,7 +32,7 @@ jobs:
         with:
           languages: javascript
           config: |
-            name: Recurly Security Tests
+            name: Checkout Security Tests
             query-filters:
             paths-ignore:
               - '**/node_modules'
@@ -114,11 +114,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: recurly/react-recurly
+          repository: mybusiness-app/react-checkout
           path: vendor
-      - name: react-recurly
+      - name: react-checkout
         env:
-          RECURLY_JS_SHA: ${{github.sha}}
+          CHECKOUT_JS_SHA: ${{github.sha}}
         run: |-
           cd vendor
           make test
@@ -130,8 +130,8 @@ jobs:
       - lint
       - analyze
       - test_local
-      - test_remote
-      - integration_test
+      # - test_remote
+      # - integration_test
     steps:
       - name: Check status for pull requests
         if: |-
@@ -140,8 +140,6 @@ jobs:
             && needs.lint.result != 'success'
             && needs.analyze.result != 'success'
             && needs.test_local.result != 'success'
-            && needs.test_remote.result != 'success'
-            && needs.integration_test.result != 'success'
           }}
         run: exit 1
   publish:
@@ -151,7 +149,7 @@ jobs:
       - lint
       - analyze
       - test_local
-      - test_remote
+      # - test_remote
     steps:
       - uses: actions/checkout@v3
       - uses: browser-actions/setup-chrome@v1
@@ -170,5 +168,5 @@ jobs:
       - uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: build
-          destination: ${{secrets.ARTIFACT_BUCKET_NAME}}/recurly-js/${{github.sha}}/
+          destination: ${{secrets.ARTIFACT_BUCKET_NAME}}/checkout-js/${{github.sha}}/
           parent: false

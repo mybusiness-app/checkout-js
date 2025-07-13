@@ -1,19 +1,19 @@
 import assert from 'assert';
 import { applyFixtures } from './support/fixtures';
 import {
-  initRecurly,
+  initCheckout,
   stubAsMobileDevice,
   stubAsNonMobileDevice
 } from './support/helpers';
 import { HostedField } from '../../lib/recurly/hosted-field';
 
-describe('Recurly.HostedField', function () {
+describe('Checkout.HostedField', function () {
   applyFixtures();
 
   this.ctx.fixture = 'minimal';
 
   beforeEach(function (done) {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
     this.recurly.ready(done);
   });
 

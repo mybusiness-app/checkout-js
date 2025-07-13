@@ -1,13 +1,13 @@
 import each from 'lodash.foreach';
 import assert from 'assert';
-import { Recurly } from '../../lib/recurly';
-import { initRecurly } from './support/helpers';
+import { Checkout } from '../../lib/recurly';
+import { initCheckout } from './support/helpers';
 
-describe('Recurly.coupon', () => {
+describe('Checkout.coupon', () => {
   let valid = { coupon: 'coop' };
 
   beforeEach(function () {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
   });
 
   it('requires a callback', function () {
@@ -18,10 +18,10 @@ describe('Recurly.coupon', () => {
     }
   });
 
-  it('requires Recurly.configure', function () {
+  it('requires Checkout.configure', function () {
     try {
-      let newRecurly = new Recurly();
-      newRecurly.coupon(valid, () => {});
+      let newCheckout = new Checkout();
+      newCheckout.coupon(valid, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));
     }

@@ -1,13 +1,13 @@
 import assert from 'assert';
 import errors from '../../lib/recurly/errors';
-import { initRecurly } from './support/helpers';
+import { initCheckout } from './support/helpers';
 
 describe('errors', () => {
   const valid = 'not-configured';
   const invalid = 'an-invalid-error';
 
   beforeEach(function () {
-    this.recurly = initRecurly();
+    this.recurly = initCheckout();
   });
 
   it('throws when the requested error is not in the directory', function () {
@@ -26,7 +26,7 @@ describe('errors', () => {
     assert(reporter.send.calledOnce);
   });
 
-  describe('RecurlyError', () => {
+  describe('CheckoutError', () => {
     it('behaves like an Error', function () {
       const err = errors(valid);
       assert.strictEqual(typeof err.name, 'string');

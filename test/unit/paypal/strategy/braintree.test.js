@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {
-  initRecurly,
+  initCheckout,
   stubBraintree,
   stubWindowOpen
 } from '../../support/helpers';
@@ -13,8 +13,8 @@ describe('BraintreeStrategy', function () {
 
   beforeEach(function (done) {
     this.sandbox = sinon.createSandbox();
-    this.recurly = initRecurly();
-    this.paypal = this.recurly.PayPal(validOpts);
+    this.checkout = initCheckout();
+    this.paypal = this.checkout.PayPal(validOpts);
     this.paypal.on('ready', done);
   });
 

@@ -15,13 +15,13 @@ describe('Checkout.fraud', function () {
 
   describe('when configured to use the kount data collector', function () {
     describe('when the site does not support kount data collection', function () {
-      it('emits an error on recurly', function (done) {
-        const recurly = initCheckout({
+      it('emits an error on checkout', function (done) {
+        const checkout = initCheckout({
           publicKey: 'test-site-without-kount',
           fraud: { ...kountConfiguration }
         });
 
-        recurly.on('error', function (err) {
+        checkout.on('error', function (err) {
           assert.strictEqual(err.code, 'fraud-data-collector-request-failed');
           assert.strictEqual(err.error.code, 'feature-not-enabled');
           assert.strictEqual(err.error.message, 'Fraud detection feature is not enabled for this site');
@@ -35,15 +35,15 @@ describe('Checkout.fraud', function () {
         const form = testBed().querySelector('#test-form');
         assert.strictEqual(form.children.length, 0);
 
-        const recurly = initCheckout({
+        const checkout = initCheckout({
           fraud: {
             kount: { ...kountConfiguration.kount, form }
           }
         });
 
-        recurly.fraud.on('ready', () => {
+        checkout.fraud.on('ready', () => {
           assert.strictEqual(form.children.length, 3);
-          assert.strictEqual(form.children[0].getAttribute('data-recurly'), 'fraud_session_id');
+          assert.strictEqual(form.children[0].getAttribute('data-checkout'), 'fraud_session_id');
           assert.strictEqual(form.children[1].getAttribute('src'), '/api/mock-200');
           assert.strictEqual(form.children[2].className, 'kaxsdc');
           done();
@@ -54,21 +54,21 @@ describe('Checkout.fraud', function () {
         this.ctx.fixture = 'multipleEmptyForms';
 
         it('creates a data collector repeatedly', function (done) {
-          let recurly = null;
+          let checkout = null;
 
           const firstForm = () => {
             const form = testBed().querySelector('#test-form-1');
             assert.strictEqual(form.children.length, 0);
 
-            recurly = initCheckout({
+            checkout = initCheckout({
               fraud: {
                 kount: { ...kountConfiguration.kount, form }
               }
             });
 
-            recurly.fraud.once('ready', () => {
+            checkout.fraud.once('ready', () => {
               assert.strictEqual(form.children.length, 3, 'test form 1 should have Kount elements');
-              assert.strictEqual(form.children[0].getAttribute('data-recurly'), 'fraud_session_id');
+              assert.strictEqual(form.children[0].getAttribute('data-checkout'), 'fraud_session_id');
               assert.strictEqual(form.children[1].getAttribute('src'), '/api/mock-200');
               assert.strictEqual(form.children[2].className, 'kaxsdc');
               secondForm();
@@ -80,17 +80,17 @@ describe('Checkout.fraud', function () {
             assert.strictEqual(form.children.length, 0);
 
             // on the second pass, we need to set up additional checks BEFORE
-            // calling recurly.configuration, because recurly.fraud already
+            // calling checkout.configuration, because checkout.fraud already
             // exists
-            recurly.fraud.once('ready', () => {
+            checkout.fraud.once('ready', () => {
               assert.strictEqual(form.children.length, 3, 'test form 2 should have Kount elements');
-              assert.strictEqual(form.children[0].getAttribute('data-recurly'), 'fraud_session_id');
+              assert.strictEqual(form.children[0].getAttribute('data-checkout'), 'fraud_session_id');
               assert.strictEqual(form.children[1].getAttribute('src'), '/api/mock-200');
               assert.strictEqual(form.children[2].className, 'kaxsdc');
               done();
             });
 
-            initCheckout(recurly, {
+            initCheckout(checkout, {
               fraud: {
                 kount: { ...kountConfiguration.kount, form }
               }
@@ -106,48 +106,48 @@ describe('Checkout.fraud', function () {
         const form = testBed().querySelector('#test-form');
         assert.strictEqual(form.children.length, 0);
 
-        const recurly = initCheckout({
+        const checkout = initCheckout({
           fraud: {
             kount: { ...kountConfiguration.kount, form }
           }
         });
 
-        recurly.on('error', err => {
+        checkout.on('error', err => {
           assert.strictEqual(err.code, 'fraud-data-collector-request-failed');
           assert.strictEqual(err.error, 'Kount SDK failed to load.');
           done();
         });
 
         // mock kount SDK load
-        recurly.fraud.on('ready', () => testBed().querySelector('script').onload());
+        checkout.fraud.on('ready', () => testBed().querySelector('script').onload());
       });
 
       describe('when no form is provided', function () {
         this.ctx.fixture = 'minimal';
 
-        it('uses a form occupied by any recurly.hostedFields', function (done) {
+        it('uses a form occupied by any checkout.hostedFields', function (done) {
           const form = testBed().querySelector('#test-form');
-          const recurly = initCheckout({
+          const checkout = initCheckout({
             fraud: { ...kountConfiguration }
           });
 
-          recurly.fraud.on('ready', () => {
-            assert(form.querySelector('input[data-recurly=fraud_session_id][type=hidden]'));
+          checkout.fraud.on('ready', () => {
+            assert(form.querySelector('input[data-checkout=fraud_session_id][type=hidden]'));
             assert(form.querySelector('script[src="/api/mock-200"]'));
             assert(form.querySelector('div[class=kaxsdc]'));
             done();
           });
         });
 
-        describe('when no form occupied by recurly.hostedFields exists', function () {
+        describe('when no form occupied by checkout.hostedFields exists', function () {
           this.ctx.fixture = 'empty';
 
           it('emits an error', function (done) {
-            const recurly = initCheckout({
+            const checkout = initCheckout({
               fraud: { ...kountConfiguration }
             });
 
-            recurly.on('error', err => {
+            checkout.on('error', err => {
               assert.strictEqual(err.code, 'fraud-data-collector-missing-form');
               done();
             });
@@ -159,11 +159,11 @@ describe('Checkout.fraud', function () {
 
   describe('when configured to use the fraudnet data collector', function () {
     it('creates a data collector using the Fraudnet SDK', function (done) {
-      const recurly = initCheckout({
+      const checkout = initCheckout({
         publicKey: 'test-site-with-fraudnet-only',
       });
 
-      recurly.fraud.on('ready', () => {
+      checkout.fraud.on('ready', () => {
         const iframe = document.querySelector('#fraudnet-iframe');
         assert.ok(iframe);
 
@@ -181,7 +181,7 @@ describe('Checkout.fraud', function () {
         assert.ok(fraudnetScript);
         assert.strictEqual(fraudnetScript.getAttribute('src'), '/api/mock-200');
 
-        recurly.destroy();
+        checkout.destroy();
         done();
       });
     });
@@ -191,15 +191,15 @@ describe('Checkout.fraud', function () {
     it('removes attached collector nodes', function (done) {
       const form = testBed().querySelector('#test-form');
 
-      const recurly = initCheckout({
+      const checkout = initCheckout({
         fraud: {
           kount: { ...kountConfiguration.kount, form }
         }
       });
 
-      recurly.fraud.on('ready', () => {
+      checkout.fraud.on('ready', () => {
         assert.strictEqual(form.children.length, 3);
-        recurly.fraud.destroy();
+        checkout.fraud.destroy();
         assert.strictEqual(form.children.length, 0);
         done();
       });
@@ -208,7 +208,7 @@ describe('Checkout.fraud', function () {
 
   describe('#params', function () {
     it('gets the fraud params presented for kount', function () {
-      const recurly = initCheckout({
+      const checkout = initCheckout({
         fraud: {
           kount: {
             dataCollector: true,
@@ -220,7 +220,7 @@ describe('Checkout.fraud', function () {
           }
         }
       });
-      const params = recurly.fraud.params({ fraud_session_id: 'FRAUD_123' });
+      const params = checkout.fraud.params({ fraud_session_id: 'FRAUD_123' });
 
       assert.deepEqual(params, [{
         processor: 'kount',
@@ -233,17 +233,17 @@ describe('Checkout.fraud', function () {
     });
 
     it('gets the fraud params presented for fraudnet', function (done) {
-      const recurly = initCheckout({
+      const checkout = initCheckout({
         publicKey: 'test-site-with-fraudnet-only',
       });
 
-      recurly.fraud.on('ready', () => {
-        const params = recurly.fraud.params();
+      checkout.fraud.on('ready', () => {
+        const params = checkout.fraud.params();
         assert.deepEqual(params, [{
           processor: 'fraudnet',
           session_id: '69e62735a65c012f5ef31b4efcad2e90',
         }]);
-        recurly.destroy();
+        checkout.destroy();
         done();
       });
     });

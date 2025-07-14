@@ -61,7 +61,7 @@ describe('Field State', elementAndFieldSuite({
   cvvElement: async () => {
     it('displays field state on the page', async function () {
       await setupElementsStateOutput();
-      await assertInputStateChange(() => fillElement(0, '.recurly-hosted-field-input', '123'), 0, {
+      await assertInputStateChange(() => fillElement(0, '.checkout-hosted-field-input', '123'), 0, {
         empty: false,
         length: 3,
         focus: false,
@@ -123,7 +123,7 @@ describe('Field State', elementAndFieldSuite({
       };
 
       await setupHostedFieldStateOutput();
-      await assertInputStateChange(() => fillElement(0, '.recurly-hosted-field-input', '123'), 0, { fields: { cvv } });
+      await assertInputStateChange(() => fillElement(0, '.checkout-hosted-field-input', '123'), 0, { fields: { cvv } });
     });
   }
 }));
@@ -144,7 +144,7 @@ async function setupHostedFieldStateOutput () {
   return await browser.execute(function (sel) {
     var output = document.querySelector(sel.output);
 
-    recurly.on('change', function (state) {
+    checkout.on('change', function (state) {
       output.innerText = JSON.stringify(state);
     });
   }, sel);
@@ -243,7 +243,7 @@ async function assertDistinctCardBehavior (...expectations) {
 
   for (const entry of entries) {
     const i = entries.indexOf(entry);
-    await assertInputStateChange(() => fillElement(i, '.recurly-hosted-field-input', entry), i, expectations[i]);
+    await assertInputStateChange(() => fillElement(i, '.checkout-hosted-field-input', entry), i, expectations[i]);
   }
 }
 

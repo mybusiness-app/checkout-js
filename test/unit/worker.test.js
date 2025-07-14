@@ -1,6 +1,6 @@
 import after from 'lodash.after';
 import assert from 'assert';
-import { IntervalWorker } from '../../lib/recurly/worker';
+import { IntervalWorker } from '../../lib/checkout/worker';
 
 describe('IntervalWorker', () => {
   beforeEach(function () {

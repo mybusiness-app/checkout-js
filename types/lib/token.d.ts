@@ -1,4 +1,4 @@
-import { RecurlyError } from './error';
+import { CheckoutError } from './error';
 import { ElementsInstance } from './elements';
 import { Address } from './address';
 
@@ -9,7 +9,7 @@ export type TokenPayload = {
 
 export type CustomerData = Address;
 
-export type TokenHandler = (error: RecurlyError | null, token: TokenPayload) => void;
+export type TokenHandler = (error: CheckoutError | null, token: TokenPayload) => void;
 
 export type HostedFieldToken = (form: HTMLFormElement | CustomerData, second: TokenHandler) => void;
 

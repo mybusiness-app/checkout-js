@@ -1,7 +1,7 @@
 import assert from 'assert';
 import each from 'component-each';
 import merge from 'lodash.merge';
-import { initRecurly, stubBraintree } from '../../support/helpers';
+import { initCheckout, stubBraintree } from '../../support/helpers';
 
 describe('PayPalStrategy', function () {
   const validOpts = {};
@@ -9,8 +9,8 @@ describe('PayPalStrategy', function () {
   stubBraintree();
 
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.paypal = this.recurly.PayPal(validOpts);
+    this.checkout = initCheckout();
+    this.paypal = this.checkout.PayPal(validOpts);
   });
 
   describe('when given custom display options', function () {
@@ -27,7 +27,7 @@ describe('PayPalStrategy', function () {
     };
 
     beforeEach(function () {
-      this.paypal = this.recurly.PayPal(merge({}, validOpts, {
+      this.paypal = this.checkout.PayPal(merge({}, validOpts, {
         display: merge({}, validDisplayOptions, { invalidOption: 'test-value' })
       }));
     });
@@ -47,8 +47,8 @@ describe('PayPalStrategy', function () {
 
   describe('when given a pricing instance', function () {
     beforeEach(function () {
-      this.pricing = this.recurly.Pricing();
-      this.paypal = this.recurly.PayPal({ pricing: this.pricing });
+      this.pricing = this.checkout.Pricing();
+      this.paypal = this.checkout.PayPal({ pricing: this.pricing });
     });
 
     it('updates display properties when pricing changes', function (done) {

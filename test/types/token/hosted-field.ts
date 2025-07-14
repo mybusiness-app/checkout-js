@@ -2,7 +2,7 @@ export default function hostedFieldToken () {
   const form = document.querySelector('form');
 
   if (form) {
-    window.recurly.token(form, (err, token) => {
+    window.checkout.token(form, (err, token) => {
       if (err) {
         err.message;
         err.code;
@@ -14,10 +14,10 @@ export default function hostedFieldToken () {
   }
 
   // @ts-expect-error
-  window.recurly.token(document.querySelector('div'), () => {});
+  window.checkout.token(document.querySelector('div'), () => {});
 
   // @ts-expect-error
-  window.recurly.token((err, token) => {
+  window.checkout.token((err, token) => {
     if (err) {
       err.message;
       err.code;

@@ -3,7 +3,7 @@ import {
   ApplePayLineItem,
   ApplePayPaymentMethodSelectedEvent,
   ApplePaySelectionUpdate,
-} from '@recurly/recurly-js';
+} from '@mybusinessapp/checkout-js';
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 function getTaxes ({ paymentMethod: { billingContact } }: ApplePayPaymentMethodSelectedEvent): ApplePaySelectionUpdate | void {
@@ -13,12 +13,12 @@ function getTaxes ({ paymentMethod: { billingContact } }: ApplePayPaymentMethodS
 }
 
 export default function applePay () {
-  window.recurly.ApplePay({
+  window.checkout.ApplePay({
     country: 'US',
     currency: 'USD',
     label: 'My Subscription',
     total: '29.00',
-    pricing: window.recurly.Pricing.Checkout()
+    pricing: window.checkout.Pricing.Checkout()
   });
 
   const total: ApplePayLineItem = {
@@ -54,7 +54,7 @@ export default function applePay () {
     },
   };
 
-  const applePay = window.recurly.ApplePay({
+  const applePay = window.checkout.ApplePay({
     country: 'US',
     currency: 'USD',
     callbacks: {

@@ -106,7 +106,7 @@ function onPrepare () {
   if (isMobile()) {
     process.env.API_PROXY = `${baseUrl()}/api-proxy`;
   }
-  require('@recurly/public-api-test-server');
+  require('@mybusinessapp/public-api-test-server');
 }
 
 function services () {

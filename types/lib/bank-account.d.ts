@@ -1,4 +1,4 @@
-import { RecurlyError } from './error';
+import { CheckoutError } from './error';
 import { TokenHandler } from './token';
 
 export type BillingInfoCommonFields = {
@@ -56,12 +56,12 @@ export type BankInfoOptions = {
 
 export type BankInfoPayload = {
   /**
-   * Bank institution name (ex: Bank of Recurly)
+   * Bank institution name (ex: Bank of Checkout)
    */
   bank_name: string;
 };
 
-export type BankInfoHandler = (err: RecurlyError, bankInfo: BankInfoPayload) => void;
+export type BankInfoHandler = (err: CheckoutError, bankInfo: BankInfoPayload) => void;
 
 export type BankInfo = (bankInfoOptions: BankInfoOptions, BankInfoHandler: BankInfoHandler) => void;
 

@@ -1,5 +1,5 @@
 export default function subscriptionPricing () {
-  const checkoutPricing = window.recurly.Pricing.Checkout();
+  const checkoutPricing = window.checkout.Pricing.Checkout();
 
   const el = document.querySelector('div');
 
@@ -94,7 +94,7 @@ export default function subscriptionPricing () {
       tax_code: 'digital'
     })
     .subscription(
-      window.recurly.Pricing.Subscription()
+      window.checkout.Pricing.Subscription()
         .plan('basic', { quantity: 1 })
         .done()
     )

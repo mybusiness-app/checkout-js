@@ -2,7 +2,7 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - master
+      - interval
   pull_request:
 
 concurrency:
@@ -14,7 +14,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Lint
         run: make lint
       - name: Lint types
@@ -27,7 +27,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript
@@ -53,9 +53,9 @@ jobs:
           - Chrome
           - Firefox
     steps:
-      - uses: browser-actions/setup-chrome@v1
+      - uses: browser-actions/setup-chrome@v2
       - uses: browser-actions/setup-firefox@v1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Unit test
         uses: coactions/setup-xvfb@v1
         env:
@@ -85,7 +85,7 @@ jobs:
           - Android-12-Remote
     steps:
       - uses: ahmadnassri/action-workflow-queue@v1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Unit test
         if: ${{matrix.type == 'Unit' && matrix.browser != 'Chrome-Remote' && matrix.browser != 'Firefox-Remote'}}
         uses: nick-fields/retry@v2
@@ -109,10 +109,10 @@ jobs:
           max_attempts: 2
           command: make test-e2e-ci
   integration_test:
-    name: Integration test with react-recurly
+    name: Integration test with react-checkout
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: mybusiness-app/react-checkout
           path: vendor
@@ -151,18 +151,22 @@ jobs:
       - test_local
       # - test_remote
     steps:
-      - uses: actions/checkout@v3
-      - uses: browser-actions/setup-chrome@v1
+      - uses: actions/checkout@v4
+      - uses: browser-actions/setup-chrome@v2
       - name: Build
         run: make build
-      - name: Report coverage
-        uses: coactions/setup-xvfb@v1
+      - name: Run tests
+        run: make test-unit-cov-ci
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         env:
-          COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
-          DISPLAY: :99
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          run: make test-unit-cov-ci
-      - uses: google-github-actions/auth@v1
+          files: ./build/reports/coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{secrets.GCR_QA_PUBLIC_DEVOPS_SA}}
       - uses: google-github-actions/upload-cloud-storage@v1

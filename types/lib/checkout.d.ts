@@ -99,7 +99,7 @@ export interface Checkout extends Emitter<CheckoutEvent> {
 
   /**
    * Checkout automates complicated subscriptions, with many factors influencing the total price at checkout. With this
-   * in mind, Checkout.js provides a robust `recurly.Pricing.Checkout` class designed to make determining the actual
+   * in mind, Checkout.js provides a robust `checkout.Pricing.Checkout` class designed to make determining the actual
    * checkout costs as simple and flexible as possible.
    *
    * @see {@link https://developers.mybusinessapp.co.za/reference/checkout-js/index.html#pricing|Pricing}

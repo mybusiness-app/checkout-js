@@ -1,6 +1,6 @@
 import assert from 'assert';
-import Element from '../../lib/recurly/element';
-import Elements from '../../lib/recurly/elements';
+import Element from '../../lib/checkout/element';
+import Elements from '../../lib/checkout/elements';
 import { initCheckout } from './support/helpers';
 
 const noop = () => {};
@@ -11,11 +11,11 @@ describe('Elements', function () {
   }
 
   beforeEach(function () {
-    const recurly = this.recurly = initCheckout();
-    this.elements = new Elements({ recurly });
+    const checkout = this.checkout = initCheckout();
+    this.elements = new Elements({ checkout });
 
     // This stub allows us to generate inert Element instances
-    this.elementsStub = new ElementsStub({ recurly });
+    this.elementsStub = new ElementsStub({ checkout });
     this.cardElementExample = this.elementsStub.CardElement();
   });
 
@@ -27,7 +27,7 @@ describe('Elements', function () {
       'CardYearElement',
       'CardCvvElement',
     ].forEach(elementName => {
-      const elements = new Elements({ recurly: this.recurly });
+      const elements = new Elements({ checkout: this.checkout });
       const element = elements[elementName]();
       assert.strictEqual(typeof elements[elementName], 'function');
       assert.strictEqual(element.elementClassName, elementName);
@@ -75,10 +75,10 @@ describe('Elements', function () {
     });
 
     it('enforces valid Element set rules', function () {
-      const { recurly, elementsStub } = this;
+      const { checkout, elementsStub } = this;
 
       Elements.VALID_SETS.forEach(validSet => {
-        const elements = new Elements({ recurly });
+        const elements = new Elements({ checkout });
         validSet.forEach(elementClass => {
           const element = elementsStub[elementClass.elementClassName]();
           elements.add(element);
@@ -93,7 +93,7 @@ describe('Elements', function () {
         ['CardNumberElement', 'CardMonthElement', 'CardYearElement', 'CardCvvElement', 'CardElement']
       ];
       invalidSets.forEach(invalidSet => {
-        const elements = new Elements({ recurly: recurly });
+        const elements = new Elements({ checkout: checkout });
         assert.throws(() => {
           invalidSet.forEach(elementName => {
             const element = elementsStub[elementName]();

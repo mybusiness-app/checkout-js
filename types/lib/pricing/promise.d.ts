@@ -1,4 +1,4 @@
-import { RecurlyError } from '../error';
+import { CheckoutError } from '../error';
 
 // This is modified from ThenPromise https://github.com/then/promise/blob/master/index.d.ts
 
@@ -23,7 +23,7 @@ export interface PricingPromise<T, PricingMethods> extends Promise<T> {
    * @returns A PricingPromise for the completion of the callback.
    */
   catch<TResult = never>(
-    onrejected?: (reason: RecurlyError) => TResult | PromiseLike<TResult>
+    onrejected?: (reason: CheckoutError) => TResult | PromiseLike<TResult>
   ): PricingPromise<T | TResult, PricingMethods> & PricingMethods;
 
   // Extensions specific to then/promise

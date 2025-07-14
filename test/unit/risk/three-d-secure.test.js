@@ -1,15 +1,15 @@
 import assert from 'assert';
 import Promise from 'promise';
 import { applyFixtures } from '../support/fixtures';
-import { initRecurly, testBed } from '../support/helpers';
-import { factory, ThreeDSecure } from '../../../lib/recurly/risk/three-d-secure/three-d-secure';
-import AdyenStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/adyen';
-import BraintreeStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/braintree';
-import SagepayStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/sage-pay';
-import StripeStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/stripe';
-import TestStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/test';
-import WirecardStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/wirecard';
-import WorldpayStrategy from '../../../lib/recurly/risk/three-d-secure/strategy/worldpay';
+import { initCheckout, testBed } from '../support/helpers';
+import { factory, ThreeDSecure } from '../../../lib/checkout/risk/three-d-secure/three-d-secure';
+import AdyenStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/adyen';
+import BraintreeStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/braintree';
+import SagepayStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/sage-pay';
+import StripeStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/stripe';
+import TestStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/test';
+import WirecardStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/wirecard';
+import WorldpayStrategy from '../../../lib/checkout/risk/three-d-secure/strategy/worldpay';
 
 describe('ThreeDSecure', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -18,8 +18,8 @@ describe('ThreeDSecure', function () {
 
   beforeEach(function (done) {
     const actionTokenId = this.actionTokenId = 'action-token-test';
-    const recurly = this.recurly = initRecurly();
-    const risk = this.risk = { add: sinon.stub(), remove: sinon.stub(),concerns: [], recurly };
+    const checkout = this.checkout = initCheckout();
+    const risk = this.risk = { add: sinon.stub(), remove: sinon.stub(),concerns: [], checkout };
     const sandbox = this.sandbox = sinon.createSandbox();
 
     // Neuter the third party lib loaders
@@ -30,7 +30,7 @@ describe('ThreeDSecure', function () {
     sandbox.stub(BraintreeStrategy.prototype, 'loadBraintreeLibraries').usingPromise(Promise).resolves();
     sandbox.stub(StripeStrategy.prototype, 'loadStripeLibrary').usingPromise(Promise).resolves();
 
-    sandbox.spy(recurly, 'Frame');
+    sandbox.spy(checkout, 'Frame');
 
     this.container = testBed().querySelector('#three-d-secure-container');
     this.threeDSecure = new ThreeDSecure({ risk, actionTokenId });
@@ -39,7 +39,7 @@ describe('ThreeDSecure', function () {
 
   afterEach(function () {
     const { sandbox } = this;
-    const { Frame } = this.recurly;
+    const { Frame } = this.checkout;
     delete window.AdyenCheckout;
     delete window.braintree;
     delete window.Stripe;
@@ -49,8 +49,8 @@ describe('ThreeDSecure', function () {
 
   describe('factory', function () {
     beforeEach(function () {
-      const { sandbox, recurly } = this;
-      this.riskStub = { add: sandbox.stub(), recurly, concerns: [] };
+      const { sandbox, checkout } = this;
+      this.riskStub = { add: sandbox.stub(), checkout, concerns: [] };
     });
 
     it('returns a ThreeDSecure instance', function () {
@@ -102,14 +102,14 @@ describe('ThreeDSecure', function () {
       });
 
       it('returns a promise', function (done) {
-        const { recurly, bin, preflights } = this;
-        const returnValue = ThreeDSecure.preflight({ recurly, bin, preflights }).then(() => done());
+        const { checkout, bin, preflights } = this;
+        const returnValue = ThreeDSecure.preflight({ checkout, bin, preflights }).then(() => done());
         assert(returnValue instanceof Promise);
       });
   
       it('resolves with preflight results from strategies', function (done) {
-        const { recurly, bin, preflights } = this;
-        ThreeDSecure.preflight({ recurly, bin, preflights })
+        const { checkout, bin, preflights } = this;
+        ThreeDSecure.preflight({ checkout, bin, preflights })
           .done(({ risk }) => {
             const [{ processor, results }] = risk;
             assert.strictEqual(Array.isArray(risk), true);
@@ -128,8 +128,8 @@ describe('ThreeDSecure', function () {
       });
 
       it('does not error out', function (done) {
-        const { recurly, bin, preflights } = this;
-        ThreeDSecure.preflight({ recurly, bin, preflights }).done(returnValue => {
+        const { checkout, bin, preflights } = this;
+        ThreeDSecure.preflight({ checkout, bin, preflights }).done(returnValue => {
           assert(Array.isArray(returnValue.risk));
           assert.strictEqual(returnValue.risk.length, 0);
           done();
@@ -148,11 +148,11 @@ describe('ThreeDSecure', function () {
   it('reports its creation', function () {
     const { risk, actionTokenId } = this;
 
-    risk.recurly.reporter.send.reset();
+    risk.checkout.reporter.send.reset();
     const threeDSecure = new ThreeDSecure({ risk, actionTokenId });
 
-    assert(risk.recurly.reporter.send.calledOnce);
-    assert(risk.recurly.reporter.send.calledWithMatch(
+    assert(risk.checkout.reporter.send.calledOnce);
+    assert(risk.checkout.reporter.send.calledWithMatch(
       'three-d-secure:create',
       { concernId: threeDSecure.id, actionTokenId }
     ));
@@ -170,11 +170,11 @@ describe('ThreeDSecure', function () {
     });
   });
 
-  describe('recurly', function () {
-    it('references the risk recurly instance', function () {
+  describe('checkout', function () {
+    it('references the risk checkout instance', function () {
       const { threeDSecure, risk } = this;
 
-      assert.strictEqual(threeDSecure.recurly, risk.recurly);
+      assert.strictEqual(threeDSecure.checkout, risk.checkout);
     });
   });
 
@@ -236,11 +236,11 @@ describe('ThreeDSecure', function () {
       const { risk, actionTokenId } = this;
 
       const threeDSecure = new ThreeDSecure({ risk, actionTokenId });
-      risk.recurly.reporter.send.reset();
+      risk.checkout.reporter.send.reset();
 
       threeDSecure.whenReady(() => {
-        assert(risk.recurly.reporter.send.calledOnce);
-        assert(risk.recurly.reporter.send.calledWithMatch(
+        assert(risk.checkout.reporter.send.calledOnce);
+        assert(risk.checkout.reporter.send.calledWithMatch(
           'three-d-secure:ready',
           { concernId: threeDSecure.id, strategy: 'test' }
         ));
@@ -295,10 +295,10 @@ describe('ThreeDSecure', function () {
       const { risk, threeDSecure, container } = this;
 
       threeDSecure.whenReady(() => {
-        risk.recurly.reporter.send.reset();
+        risk.checkout.reporter.send.reset();
         threeDSecure.attach(container);
-        assert(risk.recurly.reporter.send.calledOnce);
-        assert(risk.recurly.reporter.send.calledWithMatch(
+        assert(risk.checkout.reporter.send.calledOnce);
+        assert(risk.checkout.reporter.send.calledWithMatch(
           'three-d-secure:attach',
           { concernId: threeDSecure.id }
         ));
@@ -326,10 +326,10 @@ describe('ThreeDSecure', function () {
     it('reports removal', function () {
       const { risk, threeDSecure } = this;
 
-      risk.recurly.reporter.send.reset();
+      risk.checkout.reporter.send.reset();
       threeDSecure.remove();
-      assert(risk.recurly.reporter.send.calledOnce);
-      assert(risk.recurly.reporter.send.calledWithMatch(
+      assert(risk.checkout.reporter.send.calledOnce);
+      assert(risk.checkout.reporter.send.calledWithMatch(
         'three-d-secure:remove',
         { concernId: threeDSecure.id }
       ));

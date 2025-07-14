@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 import assert from 'assert';
-import { initRecurly, assertDone, nextTick } from '../support/helpers';
+import { initCheckout, assertDone, nextTick } from '../support/helpers';
 import dom from '../../../lib/util/dom';
 
-describe('Recurly.AlternativePaymentMethods', () => {
+describe('Checkout.AlternativePaymentMethods', () => {
   let sandbox;
-  let recurly;
+  let checkout;
   let paymentMethods;
   let params;
 
@@ -15,8 +15,8 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
   beforeEach((done) => {
     sandbox = sinon.createSandbox();
-    recurly = initRecurly();
-    recurly.ready(done);
+    checkout = initCheckout();
+    checkout.ready(done);
     params = {
       allowedPaymentMethods: ['boleto'],
       blockedPaymentMethods: ['iDeal'],
@@ -33,7 +33,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
   });
 
   afterEach(() => {
-    recurly.destroy();
+    checkout.destroy();
     sandbox.restore();
   });
 
@@ -50,7 +50,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
       const assertValidationError = missingField => {
         it('emits an error', done => {
-          paymentMethods = recurly.AlternativePaymentMethods(params);
+          paymentMethods = checkout.AlternativePaymentMethods(params);
           paymentMethods.on('error', err => assertDone(done, () => {
             assert.ok(err);
             assert.equal(err.code, 'payment-methods-config-missing');
@@ -60,11 +60,11 @@ describe('Recurly.AlternativePaymentMethods', () => {
         });
 
         it('does not make any request to RA', done => {
-          sandbox.stub(recurly.request, 'get').resolves({ });
-          paymentMethods = recurly.AlternativePaymentMethods(params);
+          sandbox.stub(checkout.request, 'get').resolves({ });
+          paymentMethods = checkout.AlternativePaymentMethods(params);
           paymentMethods.start()
             .finally(() => assertDone(done, () => {
-              assert.equal(recurly.request.get.called, false);
+              assert.equal(checkout.request.get.called, false);
             }));
         });
       };
@@ -105,7 +105,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
     describe('destroy', () => {
       it('removes the web component', done => {
-        paymentMethods = recurly.AlternativePaymentMethods(params);
+        paymentMethods = checkout.AlternativePaymentMethods(params);
         paymentMethods.start()
           .then(() => {
             paymentMethods.destroy();
@@ -116,14 +116,14 @@ describe('Recurly.AlternativePaymentMethods', () => {
     });
 
     it('make a GET /js/v1/payment_methods/list with the needed params', (done) => {
-      sandbox.stub(recurly.request, 'get').resolves({ });
-      paymentMethods = recurly.AlternativePaymentMethods(params);
+      sandbox.stub(checkout.request, 'get').resolves({ });
+      paymentMethods = checkout.AlternativePaymentMethods(params);
 
       paymentMethods.start()
         .then(() => assertDone(done, () => {
-          assert.equal(recurly.request.get.called, true);
-          assert.deepEqual(recurly.request.get.getCall(0).args[0].route, '/payment_methods/list');
-          assert.deepEqual(recurly.request.get.getCall(0).args[0].data, {
+          assert.equal(checkout.request.get.called, true);
+          assert.deepEqual(checkout.request.get.getCall(0).args[0].route, '/payment_methods/list');
+          assert.deepEqual(checkout.request.get.getCall(0).args[0].data, {
             allowedPaymentMethods: ['boleto'],
             blockedPaymentMethods: ['iDeal'],
             currency: 'USD',
@@ -148,8 +148,8 @@ describe('Recurly.AlternativePaymentMethods', () => {
       });
 
       it('emits an error', done => {
-        sandbox.stub(recurly.request, 'get').resolves(response);
-        paymentMethods = recurly.AlternativePaymentMethods(params);
+        sandbox.stub(checkout.request, 'get').resolves(response);
+        paymentMethods = checkout.AlternativePaymentMethods(params);
         paymentMethods.on('error', err => assertDone(done, () => {
           assert.ok(err);
           assert.equal(err.code, 'payment-methods-not-available');
@@ -170,10 +170,10 @@ describe('Recurly.AlternativePaymentMethods', () => {
       });
 
       it('load the js and css libraries', done => {
-        sandbox.stub(recurly.request, 'get').resolves(response);
+        sandbox.stub(checkout.request, 'get').resolves(response);
         sandbox.stub(dom, 'loadScript').resolves({});
         sandbox.stub(dom, 'loadStyle').resolves({});
-        paymentMethods = recurly.AlternativePaymentMethods(params);
+        paymentMethods = checkout.AlternativePaymentMethods(params);
 
         paymentMethods.start()
           .finally(() => assertDone(done, () => {
@@ -189,8 +189,8 @@ describe('Recurly.AlternativePaymentMethods', () => {
         });
 
         it('emits an error', done => {
-          sandbox.stub(recurly.request, 'get').resolves(response);
-          paymentMethods = recurly.AlternativePaymentMethods(params);
+          sandbox.stub(checkout.request, 'get').resolves(response);
+          paymentMethods = checkout.AlternativePaymentMethods(params);
           paymentMethods.on('error', err => assertDone(done, () => {
             assert.ok(err);
             assert.equal(err.toString(), 'Error: no internet connection available');
@@ -205,7 +205,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
         let checkout;
 
         beforeEach(() => {
-          sandbox.stub(recurly.request, 'get').resolves(response);
+          sandbox.stub(checkout.request, 'get').resolves(response);
           sandbox.stub(dom, 'loadScript').resolves({});
           sandbox.stub(dom, 'loadStyle').resolves({});
 
@@ -220,7 +220,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
         });
 
         it('initialize the dropin component with the provided params', done => {
-          paymentMethods = recurly.AlternativePaymentMethods(params);
+          paymentMethods = checkout.AlternativePaymentMethods(params);
           paymentMethods.start()
             .finally(() => assertDone(done, () => {
               assert.equal(window.AdyenCheckout.called, true);
@@ -246,12 +246,12 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when a billingAddress is specified', () => {
           beforeEach((done) => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start().finally(done);
           });
 
           it('sends billingAddress when tokenizing', (done) => {
-            sandbox.stub(recurly.request, 'post').resolves({});
+            sandbox.stub(checkout.request, 'post').resolves({});
 
             const billingAddress = {
               address1: '123 Main St',
@@ -268,9 +268,9 @@ describe('Recurly.AlternativePaymentMethods', () => {
             paymentMethods.submit({ billingAddress });
 
             nextTick(() => assertDone(done, () => {
-              assert.equal(recurly.request.post.called, true);
-              assert.deepEqual(recurly.request.post.getCall(0).args[0].route, '/payment_methods/token');
-              assert.deepEqual(recurly.request.post.getCall(0).args[0].data, {
+              assert.equal(checkout.request.post.called, true);
+              assert.deepEqual(checkout.request.post.getCall(0).args[0].route, '/payment_methods/token');
+              assert.deepEqual(checkout.request.post.getCall(0).args[0].data, {
                 currency: 'USD',
                 amount: 100,
                 countryCode: 'US',
@@ -287,13 +287,13 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         const validateTokenization = submit => {
           it('make a POST /js/v1/payment_methods/token with the needed params', done => {
-            sandbox.stub(recurly.request, 'post').resolves({ });
+            sandbox.stub(checkout.request, 'post').resolves({ });
             submit();
 
             nextTick(() => assertDone(done, () => {
-              assert.equal(recurly.request.post.called, true);
-              assert.deepEqual(recurly.request.post.getCall(0).args[0].route, '/payment_methods/token');
-              assert.deepEqual(recurly.request.post.getCall(0).args[0].data, {
+              assert.equal(checkout.request.post.called, true);
+              assert.deepEqual(checkout.request.post.getCall(0).args[0].route, '/payment_methods/token');
+              assert.deepEqual(checkout.request.post.getCall(0).args[0].data, {
                 currency: 'USD',
                 amount: 100,
                 countryCode: 'US',
@@ -309,7 +309,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
           context('when success with a token', () => {
             beforeEach(() => {
-              sandbox.stub(recurly.request, 'post').resolves({ data: 'payment-token' });
+              sandbox.stub(checkout.request, 'post').resolves({ data: 'payment-token' });
               submit();
             });
 
@@ -327,7 +327,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
           context('when fails', () => {
             beforeEach(() => {
-              sandbox.stub(recurly.request, 'post').rejects('token-error');
+              sandbox.stub(checkout.request, 'post').rejects('token-error');
               submit();
             });
 
@@ -346,7 +346,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when the component errors', () => {
           beforeEach(done => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start()
               .finally(done);
           });
@@ -363,7 +363,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when submit from the web component', () => {
           beforeEach(done => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start()
               .finally(done);
           });
@@ -376,7 +376,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when submit from the payment method instance', () => {
           beforeEach(done => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start()
               .finally(done);
           });
@@ -393,7 +393,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when change the form inputs', () => {
           beforeEach(done => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start()
               .finally(done);
           });
@@ -409,7 +409,7 @@ describe('Recurly.AlternativePaymentMethods', () => {
 
         context('when submit and purchase with the token', () => {
           beforeEach(done => {
-            paymentMethods = recurly.AlternativePaymentMethods(params);
+            paymentMethods = checkout.AlternativePaymentMethods(params);
             paymentMethods.start()
               .finally(() => {
                 const { onChange } = window.AdyenCheckout.getCall(0).args[0];

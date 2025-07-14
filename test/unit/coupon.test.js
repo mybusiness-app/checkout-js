@@ -1,18 +1,18 @@
 import each from 'lodash.foreach';
 import assert from 'assert';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { initCheckout } from './support/helpers';
 
 describe('Checkout.coupon', () => {
   let valid = { coupon: 'coop' };
 
   beforeEach(function () {
-    this.recurly = initCheckout();
+    this.checkout = initCheckout();
   });
 
   it('requires a callback', function () {
     try {
-      this.recurly.coupon(valid);
+      this.checkout.coupon(valid);
     } catch (e) {
       assert(~e.message.indexOf('callback'));
     }
@@ -33,7 +33,7 @@ describe('Checkout.coupon', () => {
 
     describe('when given an invalid plan', function () {
       it('responds with a coupon', function (done) {
-        this.recurly.coupon(invalidPlan, function (err, coupon) {
+        this.checkout.coupon(invalidPlan, function (err, coupon) {
           assert(!err);
           assert(coupon);
           assert(coupon.code);
@@ -46,7 +46,7 @@ describe('Checkout.coupon', () => {
     describe('when given a valid plan', function () {
       describe('when given an invalid coupon', function () {
         it('should throw an error', function (done) {
-          this.recurly.coupon(invalidCoupon, function (err, coupon) {
+          this.checkout.coupon(invalidCoupon, function (err, coupon) {
             assert(err);
             assert(!coupon);
             done();
@@ -56,7 +56,7 @@ describe('Checkout.coupon', () => {
 
       describe('when given a valid coupon', function () {
         it('contains a discount amount', function (done) {
-          assertValidCoupon(this.recurly, 'coop', function (coupon) {
+          assertValidCoupon(this.checkout, 'coop', function (coupon) {
             assert(!coupon.discount.rate);
             each(coupon.discount.amount, (amount, currency) => {
               assert(currency.length === 3);
@@ -69,7 +69,7 @@ describe('Checkout.coupon', () => {
 
       describe('when given a valid percent-based coupon', function () {
         it('contains a discount rate', function (done) {
-          assertValidCoupon(this.recurly, 'coop-pct', function (coupon) {
+          assertValidCoupon(this.checkout, 'coop-pct', function (coupon) {
             assert(typeof coupon.discount.rate === 'number');
             done();
           });
@@ -78,8 +78,8 @@ describe('Checkout.coupon', () => {
     });
   });
 
-  function assertValidCoupon (recurly, code, done) {
-    recurly.coupon({ plan: 'basic', coupon: code }, function (err, coupon) {
+  function assertValidCoupon (checkout, code, done) {
+    checkout.coupon({ plan: 'basic', coupon: code }, function (err, coupon) {
       assert(coupon);
       assert(coupon.code);
       assert(coupon.name);

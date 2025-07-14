@@ -1,4 +1,4 @@
-export interface RecurlyError extends Error {
+export interface CheckoutError extends Error {
   code: string;
   message: string;
   classification: string;

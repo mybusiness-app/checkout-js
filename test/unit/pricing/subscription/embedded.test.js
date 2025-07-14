@@ -1,16 +1,16 @@
 import assert from 'assert';
-import SubscriptionPricing from '../../../../lib/recurly/pricing/subscription';
+import SubscriptionPricing from '../../../../lib/checkout/pricing/subscription';
 import EmbeddedSubscriptionPricing, {
   DISABLED_METHODS,
   DEFERRED_METHODS
-} from '../../../../lib/recurly/pricing/subscription/embedded';
-import { initRecurly } from '../../support/helpers';
+} from '../../../../lib/checkout/pricing/subscription/embedded';
+import { initCheckout } from '../../support/helpers';
 
 describe('EmbeddedSubscriptionPricing', () => {
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.subscriptionPricingDefault = this.recurly.Pricing.Subscription();
-    this.subscriptionPricing = this.recurly.Pricing.Subscription();
+    this.checkout = initCheckout();
+    this.subscriptionPricingDefault = this.checkout.Pricing.Subscription();
+    this.subscriptionPricing = this.checkout.Pricing.Subscription();
 
     // Spies
     this.originalMethods = {};

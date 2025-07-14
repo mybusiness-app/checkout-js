@@ -1,5 +1,5 @@
 export default function validate () {
-  const { validate } = window.recurly;
+  const { validate } = window.checkout;
 
   // $ExpectType boolean
   validate.cardNumber('4111 1111 1111 1111');

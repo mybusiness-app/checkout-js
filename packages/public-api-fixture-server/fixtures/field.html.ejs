@@ -11,10 +11,10 @@
 
     var prefix;
     if (config().elementId) {
-      window.name = 'recurly-element:stub';
+      window.name = 'checkout-element:stub';
       prefix = 'element:' + config().elementId;
     } else {
-      window.name = 'recurlyHostedField:stub';
+      window.name = 'checkoutHostedField:stub';
       prefix = 'hostedField';
     }
 
@@ -42,9 +42,9 @@
     // Event handlers
 
     function onToken (body) {
-      var recurly = new parent.recurly.Recurly(getRecurlyConfig());
+      var checkout = new parent.checkout.Checkout(getCheckoutConfig());
       if (stubTokenizationElementName === 'cvv') {
-        recurly.config.required = ['cvv'];
+        checkout.config.required = ['cvv'];
       }
       var inputs = body.inputs;
       var id = body.id;
@@ -54,7 +54,7 @@
         inputs[frame.config().type] = frame.value();
       }
 
-      recurly.token(inputs, function send (err, token) {
+      checkout.token(inputs, function send (err, token) {
         sendMessage('token:done:' + id, { err: err, token: token });
       });
     }
@@ -72,8 +72,8 @@
       window.parent.postMessage({ event: name, body: body, groupId: groupId }, '*');
     }
 
-    function getRecurlyConfig () {
-      var queryConfig = config().recurly;
+    function getCheckoutConfig () {
+      var queryConfig = config().checkout;
       queryConfig.parent = false;
       return queryConfig;
     }

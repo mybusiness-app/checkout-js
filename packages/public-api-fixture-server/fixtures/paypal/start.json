@@ -1,6 +1,6 @@
 {
   "error": {
     "code": "paypal_error",
-    "message": "Please configure a PayPal account with reference transactions in Recurly before accepting PayPal payments."
+    "message": "Please configure a PayPal account with reference transactions in Checkout before accepting PayPal payments."
   }
 }

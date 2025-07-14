@@ -1,5 +1,5 @@
 export default function giftCard () {
-  window.recurly.giftCard({ code: 'basic' }, (error, giftCard) => {
+  window.checkout.giftCard({ code: 'basic' }, (error, giftCard) => {
     if (error) {
       error.message;
       error.code;
@@ -10,7 +10,7 @@ export default function giftCard () {
   });
 
   // @ts-expect-error
-  window.recurly.giftCard('basic', (error, giftCard) => {
+  window.checkout.giftCard('basic', (error, giftCard) => {
     if (error) {
       error.message;
       error.code;

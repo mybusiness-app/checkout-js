@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { initRecurly, stubWindowOpen } from '../../support/helpers';
+import { initCheckout, stubWindowOpen } from '../../support/helpers';
 
 describe('DirectStrategy', function () {
   const displayName = 'test';
@@ -8,23 +8,23 @@ describe('DirectStrategy', function () {
   stubWindowOpen();
 
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.paypal = this.recurly.PayPal(validOpts);
+    this.checkout = initCheckout();
+    this.paypal = this.checkout.PayPal(validOpts);
     this.sandbox = sinon.createSandbox();
-    this.sandbox.spy(this.recurly, 'Frame');
+    this.sandbox.spy(this.checkout, 'Frame');
   });
 
   afterEach(function () {
     const { sandbox } = this;
-    const { Frame } = this.recurly;
+    const { Frame } = this.checkout;
     Frame.getCalls().forEach(c => c.returnValue.destroy());
     sandbox.restore();
   });
 
   it('passes the description to the API start endpoint', function () {
     this.paypal.start();
-    assert(this.recurly.Frame.calledOnce);
-    assert(this.recurly.Frame.calledWith(sinon.match({
+    assert(this.checkout.Frame.calledOnce);
+    assert(this.checkout.Frame.calledWith(sinon.match({
       path: '/paypal/start',
       payload: sinon.match({ description: displayName })
     })));
@@ -35,13 +35,13 @@ describe('DirectStrategy', function () {
     const opts = { display: { displayName, amount } };
 
     beforeEach(function () {
-      this.paypal = this.recurly.PayPal(opts);
+      this.paypal = this.checkout.PayPal(opts);
     });
 
     it('Passes the description and amount to the API start endpoint', function () {
       this.paypal.start();
-      assert(this.recurly.Frame.calledOnce);
-      assert(this.recurly.Frame.calledWith(sinon.match({
+      assert(this.checkout.Frame.calledOnce);
+      assert(this.checkout.Frame.calledWith(sinon.match({
         path: '/paypal/start',
         payload: sinon.match({
           description: displayName,
@@ -56,13 +56,13 @@ describe('DirectStrategy', function () {
     const gatewayOpts = { display: { displayName }, gatewayCode };
 
     beforeEach(function () {
-      this.paypal = this.recurly.PayPal(gatewayOpts);
+      this.paypal = this.checkout.PayPal(gatewayOpts);
     });
 
     it('Passes the description and gateway code to the API start endpoint', function () {
       this.paypal.start();
-      assert(this.recurly.Frame.calledOnce);
-      assert(this.recurly.Frame.calledWith(sinon.match({
+      assert(this.checkout.Frame.calledOnce);
+      assert(this.checkout.Frame.calledWith(sinon.match({
         path: '/paypal/start',
         payload: sinon.match({
           description: displayName,
@@ -76,7 +76,7 @@ describe('DirectStrategy', function () {
     this.timeout(2500); // timeout with error if paypal doesn't emit cancel event
     this.paypal.on('cancel', () => done());
     this.paypal.start();
-    setTimeout(() => this.recurly.Frame.getCall(0).returnValue.emit('close'), 500);
+    setTimeout(() => this.checkout.Frame.getCall(0).returnValue.emit('close'), 500);
   });
 
   describe('destroy', function () {

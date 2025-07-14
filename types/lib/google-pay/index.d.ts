@@ -17,7 +17,7 @@ export type GooglePayPaymentAuthorizationResult = {
 };
 
 /**
- * Options used to configure the Google Pay integration with Recurly.
+ * Options used to configure the Google Pay integration with Checkout.
  */
 export type GooglePayOptions = {
   /**
@@ -77,7 +77,7 @@ export type GooglePayOptions = {
   billingAddressRequired?: boolean;
 
   /**
-   * Specify which Payment Gateway in Recurly must handle the payment.
+   * Specify which Payment Gateway in Checkout must handle the payment.
    */
   gatewayCode?: string;
 

@@ -7,7 +7,7 @@ export type AmazonPayOptions = {
   region?: string;
 
   /**
-   * Specify which Payment Gateway in Recurly must handle the payment.
+   * Specify which Payment Gateway in Checkout must handle the payment.
    */
   gatewayCode?: string
 

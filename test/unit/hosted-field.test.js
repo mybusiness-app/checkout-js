@@ -5,7 +5,7 @@ import {
   stubAsMobileDevice,
   stubAsNonMobileDevice
 } from './support/helpers';
-import { HostedField } from '../../lib/recurly/hosted-field';
+import { HostedField } from '../../lib/checkout/hosted-field';
 
 describe('Checkout.HostedField', function () {
   applyFixtures();
@@ -13,8 +13,8 @@ describe('Checkout.HostedField', function () {
   this.ctx.fixture = 'minimal';
 
   beforeEach(function (done) {
-    this.recurly = initCheckout();
-    this.recurly.ready(done);
+    this.checkout = initCheckout();
+    this.checkout.ready(done);
   });
 
   describe('when instantiated on a mobile device', function () {
@@ -87,8 +87,8 @@ function buildHostedFieldExample (opts = {}) {
   return function (done) {
     this.hostedField = new HostedField(Object.assign({}, {
       type: 'number',
-      selector: '[data-recurly=number]',
-      recurly: this.recurly.config
+      selector: '[data-checkout=number]',
+      checkout: this.checkout.config
     }, opts));
     this.hostedField.emit('hostedField:ready', { type: 'number' });
     const pollId = setInterval(() => {

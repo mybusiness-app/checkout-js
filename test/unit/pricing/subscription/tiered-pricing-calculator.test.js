@@ -2,14 +2,14 @@ import assert from 'assert';
 import {
   getTieredPricingTotal,
   getTieredPricingUnitAmount
-} from '../../../../lib/recurly/pricing/subscription/tiered-pricing-calculator';
-import { initRecurly } from '../../support/helpers';
-import TIERED_PLAN from '@recurly/public-api-test-server/fixtures/plans/tiered-plan.json';
+} from '../../../../lib/checkout/pricing/subscription/tiered-pricing-calculator';
+import { initCheckout } from '../../support/helpers';
+import TIERED_PLAN from '@mybusinessapp/public-api-test-server/fixtures/plans/tiered-plan.json';
 
-describe('Recurly.Pricing.Subscription.TieredPricingCalculator', function () {
+describe('Checkout.Pricing.Subscription.TieredPricingCalculator', function () {
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.pricing = this.recurly.Pricing.Subscription();
+    this.checkout = initCheckout();
+    this.pricing = this.checkout.Pricing.Subscription();
   });
   describe('with tiered addons', () => {
     it('should apply the tiered cost to the addon price', function (done) {

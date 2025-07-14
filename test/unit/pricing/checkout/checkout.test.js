@@ -1,22 +1,22 @@
 import assert from 'assert';
 import after from 'lodash.after';
 import isEqual from 'lodash.isequal';
-import { initRecurly } from '../../support/helpers';
+import { initCheckout } from '../../support/helpers';
 
 describe('CheckoutPricing', function () {
   beforeEach(function (done) {
-    this.recurly = initRecurly();
-    this.pricing = this.recurly.Pricing.Checkout();
+    this.checkout = initCheckout();
+    this.pricing = this.checkout.Pricing.Checkout();
     this.sandbox = sinon.createSandbox();
 
-    subscriptionPricingFactory('multiple-currencies', this.recurly, sub => {
+    subscriptionPricingFactory('multiple-currencies', this.checkout, sub => {
       this.subscriptionPricingExample = sub;
       done();
     });
   });
 
   beforeEach(function (done) {
-    subscriptionPricingFactory('tax_exempt', this.recurly, sub => {
+    subscriptionPricingFactory('tax_exempt', this.checkout, sub => {
       this.subscriptionPricingExampleTaxExempt = sub;
       done();
     });
@@ -36,7 +36,7 @@ describe('CheckoutPricing', function () {
       this.pricing.subscription({ not: 'valid' }).catch(err => {
         assert.equal(err.code, 'invalid-option');
         assert.equal(err.name, 'subscription');
-        assert(~err.message.indexOf('recurly.Pricing.Subscription'));
+        assert(~err.message.indexOf('checkout.Pricing.Subscription'));
         part();
       });
       this.pricing.subscription(this.subscriptionPricingExample).done(() => part());
@@ -66,8 +66,8 @@ describe('CheckoutPricing', function () {
 
     describe('currency resolution', () => {
       describe('when no subscriptions are present', () => {
-        it('sets the checkout currency using the recurly instance currency', function () {
-          assert.equal(this.pricing.price.currency.code, this.recurly.config.currency);
+        it('sets the checkout currency using the checkout instance currency', function () {
+          assert.equal(this.pricing.price.currency.code, this.checkout.config.currency);
         });
       });
 
@@ -87,14 +87,14 @@ describe('CheckoutPricing', function () {
 
         describe('when subscriptions already exist', () => {
           beforeEach(function (done) {
-            subscriptionPricingFactory('basic', this.recurly, sub => {
+            subscriptionPricingFactory('basic', this.checkout, sub => {
               this.subscriptionPricingExampleTwo = sub;
               done();
             });
           });
 
           beforeEach(function (done) {
-            subscriptionPricingFactory('basic-gbp', this.recurly, sub => {
+            subscriptionPricingFactory('basic-gbp', this.checkout, sub => {
               this.subscriptionPricingExampleGBP = sub;
               done();
             });
@@ -156,7 +156,7 @@ describe('CheckoutPricing', function () {
 
         describe('when multiple subscriptions are present', () => {
           beforeEach(function (done) {
-            subscriptionPricingFactory('basic', this.recurly, sub => {
+            subscriptionPricingFactory('basic', this.checkout, sub => {
               this.subscriptionPricingExampleTwo = sub;
               done();
             });
@@ -870,7 +870,7 @@ describe('CheckoutPricing', function () {
 
       describe('given a CheckoutPricing containing multiple subscriptions and adjustments', () => {
         beforeEach(function (done) {
-          subscriptionPricingFactory('basic', this.recurly, sub => {
+          subscriptionPricingFactory('basic', this.checkout, sub => {
             this.subscriptionPricingExampleTwo = sub;
             done();
           });
@@ -1085,7 +1085,7 @@ describe('CheckoutPricing', function () {
 
         describe('given a subscription-level coupon which', () => {
           beforeEach(function (done) {
-            subscriptionPricingFactory('basic-2', this.recurly, sub => {
+            subscriptionPricingFactory('basic-2', this.checkout, sub => {
               this.subscriptionPricingExampleThree = sub;
               done();
             });
@@ -1130,7 +1130,7 @@ describe('CheckoutPricing', function () {
 
         describe('given a free trial coupon which', () => {
           beforeEach(function (done) {
-            subscriptionPricingFactory('basic-2', this.recurly, sub => {
+            subscriptionPricingFactory('basic-2', this.checkout, sub => {
               this.subscriptionPricingExampleThree = sub;
               done();
             });
@@ -1138,7 +1138,7 @@ describe('CheckoutPricing', function () {
 
           // Subscription with a free trial
           beforeEach(function (done) {
-            subscriptionPricingFactory('free-trial', this.recurly, sub => {
+            subscriptionPricingFactory('free-trial', this.checkout, sub => {
               this.subscriptionPricingExampleFour = sub;
               done();
             });
@@ -1654,13 +1654,13 @@ describe('CheckoutPricing', function () {
 
           it('requests tax amounts for each code', function (done) {
             const { pricing, sandbox } = this;
-            sandbox.spy(this.recurly, 'tax');
+            sandbox.spy(this.checkout, 'tax');
             pricing
               .reprice()
               .then(() => {
-                assert(this.recurly.tax.calledWith(sinon.match({ taxCode: 'valid-tax-code' })));
-                assert(this.recurly.tax.calledWith(sinon.match({ taxCode: 'test-tax-code-adj-1' })));
-                assert(this.recurly.tax.calledWith(sinon.match({ taxCode: 'test-tax-code-adj-2' })));
+                assert(this.checkout.tax.calledWith(sinon.match({ taxCode: 'valid-tax-code' })));
+                assert(this.checkout.tax.calledWith(sinon.match({ taxCode: 'test-tax-code-adj-1' })));
+                assert(this.checkout.tax.calledWith(sinon.match({ taxCode: 'test-tax-code-adj-2' })));
                 done();
               })
               .done();
@@ -1704,7 +1704,7 @@ describe('CheckoutPricing', function () {
         describe('given tax exempt items and a discount', () => {
           beforeEach(function () {
             // Reset to eliminate the pre-defined adjustments
-            this.pricing = this.recurly.Pricing.Checkout();
+            this.pricing = this.checkout.Pricing.Checkout();
             return this.pricing
               .address({ country: 'US', postalCode: '94110' })
               .subscription(this.subscriptionPricingExampleTaxExempt)
@@ -1728,8 +1728,8 @@ describe('CheckoutPricing', function () {
 
         describe('given VAT numbers on address and tax info', () => {
           it('takes the VAT number from the tax info', function (done) {
-            const { pricing, recurly, sandbox, subscriptionPricingExample } = this;
-            sandbox.spy(recurly, 'tax');
+            const { pricing, checkout, sandbox, subscriptionPricingExample } = this;
+            sandbox.spy(checkout, 'tax');
             pricing
               .subscription(subscriptionPricingExample)
               .address({ vatNumber: 'on-address' })
@@ -1739,7 +1739,7 @@ describe('CheckoutPricing', function () {
                 assert.equal(pricing.items.tax.vatNumber, 'on-tax-info');
               })
               .done(() => {
-                assert(recurly.tax.lastCall.calledWith(sinon.match({ vatNumber: 'on-tax-info' })));
+                assert(checkout.tax.lastCall.calledWith(sinon.match({ vatNumber: 'on-tax-info' })));
                 done();
               });
           });
@@ -1747,8 +1747,8 @@ describe('CheckoutPricing', function () {
 
         describe('given a shipping address and billing address', () => {
           it('taxes according to the shipping address', function (done) {
-            const { pricing, recurly, sandbox, subscriptionPricingExample } = this;
-            sandbox.spy(recurly, 'tax');
+            const { pricing, checkout, sandbox, subscriptionPricingExample } = this;
+            sandbox.spy(checkout, 'tax');
 
             const address = { country: 'DE', postalCode: 'DE-code', vatNumber: 'arbitrary' };
             const shippingAddress = { country: 'US', postalCode: '94117' };
@@ -1757,7 +1757,7 @@ describe('CheckoutPricing', function () {
               .address(address)
               .shippingAddress(shippingAddress)
               .done(() => {
-                assert(recurly.tax.lastCall.calledWith(sinon.match(shippingAddress)));
+                assert(checkout.tax.lastCall.calledWith(sinon.match(shippingAddress)));
                 done();
               });
           });
@@ -1824,8 +1824,8 @@ describe('CheckoutPricing', function () {
   });
 });
 
-function subscriptionPricingFactory (planCode = 'basic', recurly, done) {
-  let sub = recurly.Pricing.Subscription();
+function subscriptionPricingFactory (planCode = 'basic', checkout, done) {
+  let sub = checkout.Pricing.Subscription();
   return sub.plan(planCode)
     .address({ country: 'US' })
     .done(() => done(sub));

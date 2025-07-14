@@ -1,20 +1,20 @@
 import assert from 'assert';
-import { BraintreeStrategy } from '../../../lib/recurly/venmo/strategy/braintree';
+import { BraintreeStrategy } from '../../../lib/checkout/venmo/strategy/braintree';
 import {
-  initRecurly,
+  initCheckout,
   stubBraintree,
   stubWindowOpen
 } from '../support/helpers';
 
-describe('Recurly.Venmo', function () {
+describe('Checkout.Venmo', function () {
   stubWindowOpen();
   stubBraintree();
 
   const validOpts = { braintree: { clientAuthorization: 'valid' } };
 
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.venmo = this.recurly.Venmo(validOpts);
+    this.checkout = initCheckout();
+    this.venmo = this.checkout.Venmo(validOpts);
     this.sandbox = sinon.createSandbox();
   });
 

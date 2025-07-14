@@ -22,7 +22,7 @@
         for (var i = 0; i < frames.length; i++) {
           try {
             var frame = frames[i];
-            if (frame.location.href.indexOf(origin) === 0 && frame.name.indexOf('recurly-relay-') === 0) {
+            if (frame.location.href.indexOf(origin) === 0 && frame.name.indexOf('checkout-relay-') === 0) {
               return frame;
             }
           } catch (e) {

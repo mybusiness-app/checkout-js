@@ -1,5 +1,5 @@
 module.exports = {
-  projectName: 'Recurly.js',
+  projectName: 'Checkout.js',
   capabilities: {
     'Chrome-Remote': {
       browserName: 'Chrome',

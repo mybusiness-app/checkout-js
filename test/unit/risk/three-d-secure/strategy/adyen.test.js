@@ -1,13 +1,13 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import AdyenStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/adyen';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-adyen.json';
-import fingerprintActionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-adyen-fingerprint.json';
-import fallbackActionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-adyen-3ds1.json';
-import componentRedirectActionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-adyen-component-redirect.json';
-import componentThreeDSecureRedirectActionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-adyen-component-three-d-secure-redirect.json';
-import { Frame } from '../../../../../lib/recurly/frame';
+import { initCheckout, testBed } from '../../../support/helpers';
+import AdyenStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/adyen';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-adyen.json';
+import fingerprintActionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-adyen-fingerprint.json';
+import fallbackActionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-adyen-3ds1.json';
+import componentRedirectActionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-adyen-component-redirect.json';
+import componentThreeDSecureRedirectActionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-adyen-component-three-d-secure-redirect.json';
+import { Frame } from '../../../../../lib/checkout/frame';
 
 describe('AdyenStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -15,8 +15,8 @@ describe('AdyenStrategy', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initRecurly();
-    const risk = recurly.Risk();
+    const checkout = this.checkout = initCheckout();
+    const risk = checkout.Risk();
     const threeDSecure = this.threeDSecure = risk.ThreeDSecure({ actionTokenId: 'action-token-test' });
     this.target = testBed().querySelector('#three-d-secure-container');
     this.sandbox = sinon.createSandbox();
@@ -115,10 +115,10 @@ describe('AdyenStrategy', function () {
       beforeEach(setupFallback);
 
       it('creates a 3DS 1.0 challenge frame', function () {
-        const { recurly, target, strategy } = this;
+        const { checkout, target, strategy } = this;
         strategy.attach(target);
-        assert(recurly.Frame.calledOnce);
-        assert(recurly.Frame.calledWithMatch({
+        assert(checkout.Frame.calledOnce);
+        assert(checkout.Frame.calledWithMatch({
           type: Frame.TYPES.IFRAME,
           path: '/three_d_secure/start',
           payload: {
@@ -136,16 +136,16 @@ describe('AdyenStrategy', function () {
 
     describe('when redirecting for an Adyen Component using 3-D Secure', () => {
       beforeEach(function () {
-        const { threeDSecure, sandbox, recurly } = this;
-        sandbox.spy(recurly, 'Frame');
+        const { threeDSecure, sandbox, checkout } = this;
+        sandbox.spy(checkout, 'Frame');
         this.strategy = new AdyenStrategy({ threeDSecure, actionToken: componentThreeDSecureRedirectActionToken });
       });
 
       it('redirects using an expected payload', function () {
-        const { recurly, target, strategy } = this;
+        const { checkout, target, strategy } = this;
         strategy.attach(target);
-        assert(recurly.Frame.calledOnce);
-        assert(recurly.Frame.calledWithMatch({
+        assert(checkout.Frame.calledOnce);
+        assert(checkout.Frame.calledWithMatch({
           type: Frame.TYPES.IFRAME,
           path: '/three_d_secure/start',
           payload: {
@@ -163,16 +163,16 @@ describe('AdyenStrategy', function () {
 
     describe('when redirecting for an Adyen Component not using 3-D Secure', () => {
       beforeEach(function () {
-        const { threeDSecure, sandbox, recurly } = this;
-        sandbox.spy(recurly, 'Frame');
+        const { threeDSecure, sandbox, checkout } = this;
+        sandbox.spy(checkout, 'Frame');
         this.strategy = new AdyenStrategy({ threeDSecure, actionToken: componentRedirectActionToken });
       });
 
       it('redirects using an expected payload', function () {
-        const { recurly, target, strategy } = this;
+        const { checkout, target, strategy } = this;
         strategy.attach(target);
-        assert(recurly.Frame.calledOnce);
-        assert(recurly.Frame.calledWithMatch({
+        assert(checkout.Frame.calledOnce);
+        assert(checkout.Frame.calledWithMatch({
           type: Frame.TYPES.WINDOW,
           path: '/three_d_secure/start',
           payload: {
@@ -202,8 +202,8 @@ describe('AdyenStrategy', function () {
   });
 
   function setupFallback () {
-    const { threeDSecure, sandbox, recurly } = this;
-    sandbox.spy(recurly, 'Frame');
+    const { threeDSecure, sandbox, checkout } = this;
+    sandbox.spy(checkout, 'Frame');
     this.strategy = new AdyenStrategy({ threeDSecure, actionToken: fallbackActionToken });
   }
 });

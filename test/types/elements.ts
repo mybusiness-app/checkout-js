@@ -1,5 +1,5 @@
 export default function elements () {
-  const elements = window.recurly.Elements();
+  const elements = window.checkout.Elements();
   const cardElement = elements.CardElement({
     inputType: 'mobileSelect',
     displayIcon: true,
@@ -44,7 +44,7 @@ export default function elements () {
     elements.CardYearElement(elementOptions),
     elements.CardCvvElement(elementOptions)
   ].forEach(element => {
-    element.attach('#recurly-elements').configure({}).focus().remove();
+    element.attach('#checkout-elements').configure({}).focus().remove();
     element.on('attach', () => {});
     element.on('blur', () => {});
     element.on('change', () => {});

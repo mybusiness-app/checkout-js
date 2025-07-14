@@ -1,61 +1,61 @@
 import assert from 'assert';
 import isEmpty from 'lodash.isempty';
 import Promise from 'promise';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { initCheckout } from './support/helpers';
-import { Request } from '../../lib/recurly/request';
+import { Request } from '../../lib/checkout/request';
 
 describe('Request', () => {
   beforeEach(function () {
-    const recurly = this.recurly = initCheckout();
-    this.request = new Request({ recurly });
+    const checkout = this.checkout = initCheckout();
+    this.request = new Request({ checkout });
   });
 
   describe('Request.timeout', () => {
-    it('respects the recurly config property', function () {
-      assert.strictEqual(this.request.timeout, this.recurly.config.timeout);
-      this.recurly.config.timeout = 10;
+    it('respects the checkout config property', function () {
+      assert.strictEqual(this.request.timeout, this.checkout.config.timeout);
+      this.checkout.config.timeout = 10;
       assert.strictEqual(this.request.timeout, 10);
     });
   });
 
   describe('Request.key', () => {
-    it('respects the recurly config property', function () {
-      assert.strictEqual(this.request.key, this.recurly.config.publicKey);
-      this.recurly.configure({ publicKey: 'test-value' });
+    it('respects the checkout config property', function () {
+      assert.strictEqual(this.request.key, this.checkout.config.publicKey);
+      this.checkout.configure({ publicKey: 'test-value' });
       assert.strictEqual(this.request.key, 'test-value');
     });
   });
 
   describe('Request.deviceId', () => {
-    it('defers to recurly.deviceId', function () {
-      assert.strictEqual(this.request.deviceId, this.recurly.deviceId);
+    it('defers to checkout.deviceId', function () {
+      assert.strictEqual(this.request.deviceId, this.checkout.deviceId);
     });
   });
 
   describe('Request.sessionId', () => {
-    it('defers to recurly.sessionId', function () {
-      assert.strictEqual(this.request.sessionId, this.recurly.sessionId);
+    it('defers to checkout.sessionId', function () {
+      assert.strictEqual(this.request.sessionId, this.checkout.sessionId);
     });
   });
 
   describe('Request.version', () => {
     describe('when Checkout is configured as a parent', () => {
-      it('returns recurly.version', function () {
-        assert.strictEqual(this.request.version, this.recurly.version);
-        this.recurly.configure({ publicKey: 'test-value' });
+      it('returns checkout.version', function () {
+        assert.strictEqual(this.request.version, this.checkout.version);
+        this.checkout.configure({ publicKey: 'test-value' });
         assert.strictEqual(this.request.key, 'test-value');
       });
     });
 
     describe('when Checkout is configured as a dependent', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initCheckout({ parent: false, parentVersion: 'test-parent-version' });
-        this.request = new Request({ recurly });
+        const checkout = this.checkout = initCheckout({ parent: false, parentVersion: 'test-parent-version' });
+        this.request = new Request({ checkout });
       });
 
-      it('returns recurly.parentVersion', function () {
-        assert.strictEqual(this.request.version, this.recurly.config.parentVersion);
+      it('returns checkout.parentVersion', function () {
+        assert.strictEqual(this.request.version, this.checkout.config.parentVersion);
         assert.strictEqual(this.request.version, 'test-parent-version');
       });
     });
@@ -137,32 +137,32 @@ describe('Request', () => {
       it('Applies Checkout.version to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
-        assert(this.request.xhr.calledWithMatch({ data: { example: 0, version: this.recurly.version } }));
+        assert(this.request.xhr.calledWithMatch({ data: { example: 0, version: this.checkout.version } }));
       });
 
       it('Applies Checkout.key to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
-        assert(this.request.xhr.calledWithMatch({ data: { example: 0, key: this.recurly.config.publicKey } }));
+        assert(this.request.xhr.calledWithMatch({ data: { example: 0, key: this.checkout.config.publicKey } }));
       });
 
       it('Applies Checkout.deviceId to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
-        assert(this.request.xhr.calledWithMatch({ data: { example: 0, deviceId: this.recurly.deviceId } }));
+        assert(this.request.xhr.calledWithMatch({ data: { example: 0, deviceId: this.checkout.deviceId } }));
       });
 
       it('Applies Checkout.sessionId to the request', function () {
         let data = { example: 0 };
         this.request.request({ method: 'get', route: 'test', data });
-        assert(this.request.xhr.calledWithMatch({ data: { example: 0, sessionId: this.recurly.sessionId } }));
+        assert(this.request.xhr.calledWithMatch({ data: { example: 0, sessionId: this.checkout.sessionId } }));
       });
     });
 
     describe('when configured for jsonp requests', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initCheckout({ cors: false });
-        this.request = new Request({ recurly });
+        const checkout = this.checkout = initCheckout({ cors: false });
+        this.request = new Request({ checkout });
       });
 
       beforeEach(function () { sinon.spy(this.request, 'jsonp'); });
@@ -178,8 +178,8 @@ describe('Request', () => {
 
     describe('when configured for XHR requests', () => {
       beforeEach(function () {
-        const recurly = this.recurly = initCheckout({ cors: true });
-        this.request = new Request({ recurly });
+        const checkout = this.checkout = initCheckout({ cors: true });
+        this.request = new Request({ checkout });
       });
 
       it('invokes Request.xhr', function () {
@@ -222,11 +222,11 @@ describe('Request', () => {
             &arrayOfArrays[1][2]=c
             &arrayOfArrays[1][3]=d
             &arrayOfArrays[1][4]=e
-            &version=${this.recurly.version}
+            &version=${this.checkout.version}
             &key=test
-            &deviceId=${this.recurly.deviceId}
-            &sessionId=${this.recurly.sessionId}
-            &instanceId=${this.recurly.id}
+            &deviceId=${this.checkout.deviceId}
+            &sessionId=${this.checkout.sessionId}
+            &instanceId=${this.checkout.id}
             `.replace(/\n|\s/g, '');
 
           this.XHR = (function () {
@@ -256,7 +256,7 @@ describe('Request', () => {
           });
 
           it('sends properly-encoded data in the request body', function () {
-            assert(this.XHR.prototype.open.calledWithExactly('post', `${this.recurly.config.api}/test`));
+            assert(this.XHR.prototype.open.calledWithExactly('post', `${this.checkout.config.api}/test`));
             assert(this.XHR.prototype.send.calledWithExactly(this.exampleEncoded()));
           });
         });
@@ -268,7 +268,7 @@ describe('Request', () => {
           });
 
           it('sends properly-encoded data in the request body', function () {
-            assert(this.XHR.prototype.open.calledWithExactly('put', `${this.recurly.config.api}/test`));
+            assert(this.XHR.prototype.open.calledWithExactly('put', `${this.checkout.config.api}/test`));
             assert(this.XHR.prototype.send.calledWithExactly(this.exampleEncoded()));
           });
         });
@@ -280,7 +280,7 @@ describe('Request', () => {
           });
 
           it('appends properly-encoded data to the url', function () {
-            const url = `${this.recurly.config.api}/test?${this.exampleEncoded()}`;
+            const url = `${this.checkout.config.api}/test?${this.exampleEncoded()}`;
             assert(this.XHR.prototype.open.calledWithExactly('get', url));
             assert(this.XHR.prototype.send.calledWith());
           });
@@ -288,9 +288,9 @@ describe('Request', () => {
 
         describe('when configured with a hostname', () => {
           it('Applies the hostname as a header', function () {
-            this.recurly.configure({ hostname: 'test-hostname.recurly.com' });
+            this.checkout.configure({ hostname: 'test-hostname.mybusinessapp.co.za' });
             this.request.request({ method: 'get', route: 'test' });
-            assert(this.XHR.prototype.setRequestHeader.calledWithMatch('Checkout-Credential-Checkout-Hostname', 'test-hostname.recurly.com'));
+            assert(this.XHR.prototype.setRequestHeader.calledWithMatch('Checkout-Credential-Checkout-Hostname', 'test-hostname.mybusinessapp.co.za'));
           });
         });
       });
@@ -333,7 +333,7 @@ describe('Request', () => {
         });
       });
 
-      it(`invokes recurly.request on the first call, and not on the
+      it(`invokes checkout.request on the first call, and not on the
           second, with identical responses for both requests`, function (done) {
         this.request.cached({ method: 'get', route: 'test', data }).done(() => {
           assert(this.request.request.calledOnce);
@@ -350,31 +350,31 @@ describe('Request', () => {
   describe('Request.queued', () => {
     const args = { method: 'get', route: 'test', data: { arbitrary: 'payload' } };
 
-    describe('when recurly is not configured', () => {
+    describe('when checkout is not configured', () => {
       beforeEach(function () {
-        const recurly = this.recurly = new Checkout;
-        this.request = new Request({ recurly });
+        const checkout = this.checkout = new Checkout;
+        this.request = new Request({ checkout });
       });
 
       it('adds the request to the queue', function () {
-        assert.strictEqual(this.recurly.listeners('configured').length, 0);
+        assert.strictEqual(this.checkout.listeners('configured').length, 0);
         this.request.queued(args);
-        assert.strictEqual(this.recurly.listeners('configured').length, 1);
+        assert.strictEqual(this.checkout.listeners('configured').length, 1);
       });
 
       it('executes the queue once configured', function (done) {
         const step = () => {
-          assert.strictEqual(this.recurly.listeners('configured').length, 0);
+          assert.strictEqual(this.checkout.listeners('configured').length, 0);
           done();
         };
-        assert.strictEqual(this.recurly.listeners('configured').length, 0);
+        assert.strictEqual(this.checkout.listeners('configured').length, 0);
         this.request.queued(args).then(step);
-        assert.strictEqual(this.recurly.listeners('configured').length, 1);
-        initCheckout(this.recurly);
+        assert.strictEqual(this.checkout.listeners('configured').length, 1);
+        initCheckout(this.checkout);
       });
     });
 
-    it('executes immediately when recurly is configured', function () {
+    it('executes immediately when checkout is configured', function () {
       sinon.spy(this.request, 'request');
       this.request.queued(args);
       assert(this.request.request.calledOnce);
@@ -447,8 +447,8 @@ describe('Request', () => {
 
   describe('Request.jsonp', () => {
     beforeEach(function () {
-      this.exampleOkUrl = this.recurly.url('/mock-200');
-      this.exampleErrUrl = this.recurly.url('/mock-200-err');
+      this.exampleOkUrl = this.checkout.url('/mock-200');
+      this.exampleErrUrl = this.checkout.url('/mock-200-err');
 
       sinon.spy(Request, 'makeJsonpRequest');
     });

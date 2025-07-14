@@ -1,6 +1,6 @@
 import { CardElementOptions, IndividualElementOptions } from './elements';
 
-export type RecurlyOptions = {
+export type CheckoutOptions = {
   cors?: boolean;
   publicKey: string;
   currency?: string;
@@ -47,4 +47,4 @@ export type RecurlyOptions = {
   };
 };
 
-export type Configure = (recurlyConfig: RecurlyOptions | string) => void;
+export type Configure = (checkoutConfig: CheckoutOptions | string) => void;

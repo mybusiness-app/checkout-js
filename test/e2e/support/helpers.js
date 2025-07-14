@@ -45,7 +45,7 @@ const TOKEN_TYPES = {
 };
 
 const SELECTORS = {
-  HOSTED_FIELD_INPUT: '.recurly-hosted-field-input',
+  HOSTED_FIELD_INPUT: '.checkout-hosted-field-input',
   CARD_ELEMENT: {
     NUMBER: 'input[placeholder="Card number"]',
     EXPIRY: 'input[placeholder="MM / YY"]',
@@ -66,7 +66,7 @@ EXAMPLES.EXPIRY_FORMATTED = `${EXAMPLES.MONTH} / ${EXAMPLES.YEAR}`;
 module.exports = {
   assertIsAToken,
   BROWSERS,
-  configureRecurly,
+  configureCheckout,
   createElement,
   DEVICES,
   ELEMENT_TYPES,
@@ -80,7 +80,7 @@ module.exports = {
   fillElement,
   getValue,
   init,
-  recurlyEnvironment,
+  checkoutEnvironment,
   tokenize,
   TOKEN_TYPES
 };
@@ -167,26 +167,26 @@ function elementAndFieldSuite ({
 /**
  * initializes a standard e2e test
  *
- * @param {Object} opts to pass to recurly.configure
+ * @param {Object} opts to pass to checkout.configure
  * @return {Promise}
  */
 function init ({ fixture = '', opts = {} } = {}) {
   return async () => {
     await browser.url(`e2e/${fixture}`);
-    return await configureRecurly(Object.assign({}, recurlyEnvironment(), opts));
+    return await configureCheckout(Object.assign({}, checkoutEnvironment(), opts));
   };
 }
 
 /**
- * Configures the global recurly singleton on the test suite
+ * Configures the global checkout singleton on the test suite
  *
- * @param {Object} opts to pass to recurly.configure
+ * @param {Object} opts to pass to checkout.configure
  * @return {Promise}
  */
-async function configureRecurly (opts = {}) {
+async function configureCheckout (opts = {}) {
   return await browser.executeAsync(function (opts, done) {
-    recurly.configure(opts);
-    recurly.ready(function () {
+    checkout.configure(opts);
+    checkout.ready(function () {
       done();
     });
   }, opts);
@@ -199,7 +199,7 @@ async function configureRecurly (opts = {}) {
  */
 async function createElement (elementClass, config = {}) {
   return await browser.executeAsync(function (elementClass, config, done) {
-    const elements = window.__e2e__.elements = window.__e2e__.elements || recurly.Elements();
+    const elements = window.__e2e__.elements = window.__e2e__.elements || checkout.Elements();
     const element = elements[elementClass](config);
     const container = document.querySelector('.test-element-container');
 
@@ -284,11 +284,11 @@ async function fillElement (frame, selector, val) {
  * This currently only works for
  *
  * @param  {String} form query selector of the form to tokenize
- * @return {Array} array of [err, token], as returned by `recurly.token`
+ * @return {Array} array of [err, token], as returned by `checkout.token`
  */
 async function tokenize (form) {
   return await browser.executeAsync(function (form, done) {
-    recurly.token(document.querySelector(form), function (err, token) {
+    checkout.token(document.querySelector(form), function (err, token) {
       done([err, token]);
     });
   }, form);
@@ -310,14 +310,14 @@ function assertIsAToken (maybeToken, expectedType = TOKEN_TYPES.CREDIT_CARD) {
 
 // Utility
 
-function recurlyEnvironment () {
+function checkoutEnvironment () {
   const {
     API: api,
     API_PROXY: apiProxy,
     PUBLIC_KEY: publicKey
   } = global.testEnvironment;
   const opts = {};
-  opts.api = apiProxy || api || 'https://api.recurly.com/js/v1';
+  opts.api = apiProxy || api || 'https://mpp-api-mybusinessapp-san.azure-api.net/js/v1';
   opts.publicKey = publicKey || 'ewr1-zfJT5nPe1qW7jihI32LIRH';
   return opts;
 }

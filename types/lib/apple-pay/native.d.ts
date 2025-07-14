@@ -174,7 +174,7 @@ export type ApplePayRecurringPaymentRequest = {
 
   /**
    * A URL to a web page where the user can update or delete the payment method for the recurring payment.
-   * Defaults to the managment URL set in the Recurly Apple Pay configuration.
+   * Defaults to the managment URL set in the Checkout Apple Pay configuration.
    */
   managementURL?: string;
 };
@@ -195,7 +195,7 @@ export type ApplePayPaymentRequest = {
 
   /**
    * The payment networks the merchant supports. Only selects those networks that intersect with the merchant's
-   * payment gateways configured in Recurly.
+   * payment gateways configured in Checkout.
    */
   supportedNetworks?: string[];
 
@@ -365,7 +365,7 @@ export type ApplePayPayment = {
    * The shipping contact selected by the user for this transaction.
    */
   shippingContact: ApplePayPaymentContact;
-  recurlyToken: TokenPayload;
+  checkoutToken: TokenPayload;
 };
 
 /**

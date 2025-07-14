@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { applyFixtures } from './support/fixtures';
 import { initCheckout, stubAsMobileDevice } from './support/helpers';
-import { FIELD_TYPES } from '../../lib/recurly/hosted-fields';
+import { FIELD_TYPES } from '../../lib/checkout/hosted-fields';
 
 describe('Checkout.HostedFields', function () {
   applyFixtures();
@@ -9,11 +9,11 @@ describe('Checkout.HostedFields', function () {
   this.ctx.fixture = 'all';
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initCheckout();
+    const checkout = this.checkout = initCheckout();
 
-    recurly.ready(() => {
-      this.hostedFields = recurly.hostedFields;
-      this.hostedField = recurly.hostedFields.fields[0];
+    checkout.ready(() => {
+      this.hostedFields = checkout.hostedFields;
+      this.hostedField = checkout.hostedFields.fields[0];
       done();
     });
   });
@@ -37,7 +37,7 @@ describe('Checkout.HostedFields', function () {
       this.sandbox = sinon.createSandbox();
       this.sandbox.spy(this.hostedFields, 'onTab');
       this.sandbox.spy(this.hostedFields, 'tabbableItems');
-      this.recurly.ready(() => done());
+      this.checkout.ready(() => done());
     });
 
     afterEach(function () {
@@ -57,7 +57,7 @@ describe('Checkout.HostedFields', function () {
     });
 
     it('calls onTab when receiving a tab event', function (done) {
-      this.recurly.emit('ready');
+      this.checkout.emit('ready');
       this.hostedFields.emit('hostedField:tab:next', { type: this.hostedField.type });
       setTimeout(() => {
         assert.strictEqual(this.hostedFields.onTab.called, true);
@@ -74,8 +74,8 @@ describe('Checkout.HostedFields', function () {
   describe('fieldConfig', function () {
     describe('format', function () {
       it('prefers the individual field config value', function () {
-        const { recurly, hostedFields } = this;
-        recurly.configure({
+        const { checkout, hostedFields } = this;
+        checkout.configure({
           fields: {
             all: { format: true },
             number: { format: false }
@@ -87,8 +87,8 @@ describe('Checkout.HostedFields', function () {
       });
 
       it('falls back to the general config value', function () {
-        const { recurly, hostedFields } = this;
-        recurly.configure({
+        const { checkout, hostedFields } = this;
+        checkout.configure({
           fields: {
             all: { format: true }
           }
@@ -101,8 +101,8 @@ describe('Checkout.HostedFields', function () {
 
     describe('tabIndex', function () {
       it('prefers the general field config value', function () {
-        const { recurly, hostedFields } = this;
-        recurly.configure({
+        const { checkout, hostedFields } = this;
+        checkout.configure({
           fields: {
             all: { tabIndex: 0 },
             number: { tabIndex: 200 }
@@ -114,8 +114,8 @@ describe('Checkout.HostedFields', function () {
       });
 
       it('falls back to the individual config value', function () {
-        const { recurly, hostedFields } = this;
-        recurly.configure({
+        const { checkout, hostedFields } = this;
+        checkout.configure({
           fields: {
             number: { tabIndex: 200 }
           }

@@ -7,9 +7,9 @@ import Emitter from 'component-emitter';
 import Promise from 'promise';
 import { initCheckout, nextTick, testBed } from './support/helpers';
 import BraintreeLoader from '../../lib/util/braintree-loader';
-import filterSupportedNetworks from '../../lib/recurly/apple-pay/util/filter-supported-networks';
+import filterSupportedNetworks from '../../lib/checkout/apple-pay/util/filter-supported-networks';
 
-const infoFixture = require('@recurly/public-api-test-server/fixtures/apple_pay/info');
+const infoFixture = require('@mybusinessapp/public-api-test-server/fixtures/apple_pay/info');
 
 const INTEGRATION = {
   DIRECT: 'Direct Integration',
@@ -122,7 +122,7 @@ function applePayTest (integrationType) {
     };
 
     beforeEach(function () {
-      this.recurly = initCheckout();
+      this.checkout = initCheckout();
       if (isBraintreeIntegration) {
         window.braintree = getBraintreeStub();
       }
@@ -136,7 +136,7 @@ function applePayTest (integrationType) {
       describe('when Apple Pay is not supported', function () {
         beforeEach(function () {
           delete window.ApplePaySession;
-          this.applePay = this.recurly.ApplePay(validOpts);
+          this.applePay = this.checkout.ApplePay(validOpts);
         });
 
         it('registers an Apple Pay not supported error', function () {
@@ -155,7 +155,7 @@ function applePayTest (integrationType) {
       describe('when Apple Pay is not set up', function () {
         beforeEach(function () {
           this.sandbox.stub(ApplePaySessionStub, 'canMakePayments').returns(false);
-          this.applePay = this.recurly.ApplePay(clone(validOpts));
+          this.applePay = this.checkout.ApplePay(clone(validOpts));
         });
 
         it('registers an Apple Pay not available error', function () {
@@ -174,7 +174,7 @@ function applePayTest (integrationType) {
       describe('when Apple Pay version not supported', function () {
         beforeEach(function () {
           this.sandbox.stub(ApplePaySessionStub, 'version').value(2);
-          this.applePay = this.recurly.ApplePay(clone(validOpts));
+          this.applePay = this.checkout.ApplePay(clone(validOpts));
         });
 
         it('registers an Apple Pay not supported error', function () {
@@ -193,7 +193,7 @@ function applePayTest (integrationType) {
       it('sets options.label as the i18n total', function (done) {
         let options = omit(validOpts, 'label');
         options.label = 'Label';
-        let applePay = this.recurly.ApplePay(options);
+        let applePay = this.checkout.ApplePay(options);
 
         applePay.ready(ensureDone(done, () => {
           assert.equal(applePay.config.i18n.totalLineItemLabel, options.label);
@@ -203,14 +203,14 @@ function applePayTest (integrationType) {
 
       describe('when not given options.pricing', function () {
         it('uses a $0 total when options.total is not provided', function (done) {
-          let applePay = this.recurly.ApplePay(omit(validOpts, 'total'));
+          let applePay = this.checkout.ApplePay(omit(validOpts, 'total'));
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.total.amount, '0.00');
           }));
         });
 
         it('creates the total line item from options.total and the default options.label if absent', function (done) {
-          let applePay = this.recurly.ApplePay(omit(validOpts, 'label'));
+          let applePay = this.checkout.ApplePay(omit(validOpts, 'label'));
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.total.amount, validOpts.total);
             assert.equal(applePay.session.total.label, applePay.config.i18n.totalLineItemLabel);
@@ -219,7 +219,7 @@ function applePayTest (integrationType) {
         });
 
         it('creates the total line item from options.total and options.label', function (done) {
-          let applePay = this.recurly.ApplePay(clone(validOpts));
+          let applePay = this.checkout.ApplePay(clone(validOpts));
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.total.amount, validOpts.total);
             assert.equal(applePay.session.total.label, validOpts.label);
@@ -230,7 +230,7 @@ function applePayTest (integrationType) {
         it('uses options.paymentRequest.total as the total line item', function (done) {
           let options = omit(validOpts, 'total');
           options.paymentRequest = { total: { label: 'Subscription', amount: '10.00' }, };
-          let applePay = this.recurly.ApplePay(options);
+          let applePay = this.checkout.ApplePay(options);
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.total, options.paymentRequest.total);
             assert.equal(applePay.session.recurringPaymentRequest, undefined);
@@ -240,8 +240,8 @@ function applePayTest (integrationType) {
 
       describe('when given options.pricing', function () {
         beforeEach(function () {
-          const pricing = this.pricing = this.recurly.Pricing.Checkout();
-          this.applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+          const pricing = this.pricing = this.checkout.Pricing.Checkout();
+          this.applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
         });
 
         it('binds a pricing instance', function (done) {
@@ -253,7 +253,7 @@ function applePayTest (integrationType) {
 
         it('ignores options.total and options.lineItems', function (done) {
           const lineItems = [{ label: 'Taxes', amount: '10.00' }];
-          this.applePay = this.recurly.ApplePay(merge({}, validOpts, {
+          this.applePay = this.checkout.ApplePay(merge({}, validOpts, {
             pricing: this.pricing,
             lineItems
           }));
@@ -266,10 +266,10 @@ function applePayTest (integrationType) {
 
         describe('when options.pricing is a PricingPromise', () => {
           beforeEach(function () {
-            const { recurly } = this;
-            const pricing = this.pricing = recurly.Pricing.Checkout();
+            const { checkout } = this;
+            const pricing = this.pricing = checkout.Pricing.Checkout();
             const pricingPromise = this.pricingPromise = pricing.reprice();
-            this.applePay = recurly.ApplePay(merge({}, validOpts, { pricing: pricingPromise }));
+            this.applePay = checkout.ApplePay(merge({}, validOpts, { pricing: pricingPromise }));
           });
 
           it('uses the underlying Pricing instance', function (done) {
@@ -290,7 +290,7 @@ function applePayTest (integrationType) {
         describe('when the pricing instance includes several items', () => {
           beforeEach(function (done) {
             this.timeout(10000);
-            this.subscription = this.recurly.Pricing.Subscription()
+            this.subscription = this.checkout.Pricing.Subscription()
               .plan('basic')
               .address({ country: 'US', postalCode: '94117' })
               .done(() => {
@@ -331,7 +331,7 @@ function applePayTest (integrationType) {
             });
 
             it('displays those labels', function (done) {
-              const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing: this.pricing, i18n: this.exampleI18n }));
+              const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing: this.pricing, i18n: this.exampleI18n }));
               applePay.on('ready', ensureDone(done, () => {
                 const total = applePay.totalLineItem;
                 const subtotal = applePay.lineItems[0];
@@ -361,7 +361,7 @@ function applePayTest (integrationType) {
 
       it('requires a valid country', function (done) {
         const invalid = 'DE';
-        let applePay = this.recurly.ApplePay(merge({}, validOpts, { country: invalid }));
+        let applePay = this.checkout.ApplePay(merge({}, validOpts, { country: invalid }));
         applePay.on('error', (err) => {
           nextTick(ensureDone(done, () => {
             assert.equal(err, applePay.initError);
@@ -372,7 +372,7 @@ function applePayTest (integrationType) {
 
       it('requires a valid currency', function (done) {
         const invalid = 'EUR';
-        let applePay = this.recurly.ApplePay(merge({}, validOpts, { currency: invalid }));
+        let applePay = this.checkout.ApplePay(merge({}, validOpts, { currency: invalid }));
         applePay.on('error', (err) => {
           nextTick(ensureDone(done, () => {
             assert.equal(err, applePay.initError);
@@ -384,7 +384,7 @@ function applePayTest (integrationType) {
       describe('options.enforceVersion', function () {
         it('returns an initError if the browser version for requiredShippingContactFields is not met', function (done) {
           this.sandbox.stub(ApplePaySessionStub, 'version').value(4);
-          let applePay = this.recurly.ApplePay(merge({}, validOpts, {
+          let applePay = this.checkout.ApplePay(merge({}, validOpts, {
             enforceVersion: true, paymentRequest: { requiredShippingContactFields: ['email'] },
           }));
 
@@ -398,7 +398,7 @@ function applePayTest (integrationType) {
 
         it('sets requiredShippingContactFields if the browser version is met', function (done) {
           this.sandbox.stub(ApplePaySessionStub, 'version').value(14);
-          let applePay = this.recurly.ApplePay(merge({}, validOpts, {
+          let applePay = this.checkout.ApplePay(merge({}, validOpts, {
             enforceVersion: true, paymentRequest: { requiredShippingContactFields: ['email'] },
           }));
 
@@ -410,7 +410,7 @@ function applePayTest (integrationType) {
 
       describe('recurringPaymentRequest', function () {
         it('is configured when the options.total is a recurring line item', function (done) {
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, {
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, {
             paymentRequest: { total: { label: 'Apple Pay testing', amount: '3.00', paymentTiming: 'recurring' }, },
           }));
 
@@ -425,7 +425,7 @@ function applePayTest (integrationType) {
         });
 
         it('is configured when the options.recurring is set', function (done) {
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, { total: '3.00', recurring: true, }));
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, { total: '3.00', recurring: true, }));
 
           applePay.ready(ensureDone(done, () => {
             assert.deepEqual(applePay.session.recurringPaymentRequest, {
@@ -444,7 +444,7 @@ function applePayTest (integrationType) {
           };
 
           it('uses it as the recurringPaymentRequest', function (done) {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, {
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, {
               paymentRequest: {
                 recurringPaymentRequest: {
                   ...recurringPaymentRequest,
@@ -463,7 +463,7 @@ function applePayTest (integrationType) {
           });
 
           it('uses the managementURL from the server', function (done) {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, { paymentRequest: { recurringPaymentRequest, } }));
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, { paymentRequest: { recurringPaymentRequest, } }));
 
             applePay.ready(ensureDone(done,() => {
               assert.deepEqual(applePay.session.recurringPaymentRequest, {
@@ -477,7 +477,7 @@ function applePayTest (integrationType) {
       });
 
       it('sets other ApplePayPaymentRequest options and does not include configuration options', function (done) {
-        const applePay = this.recurly.ApplePay(merge({}, validOpts, {
+        const applePay = this.checkout.ApplePay(merge({}, validOpts, {
           paymentRequest: {
             requiredShippingContactFields: ['email'],
             supportedCountries: ['US'],
@@ -495,14 +495,14 @@ function applePayTest (integrationType) {
 
       describe('requiredBillingContactFields', function () {
         it('defaults to the postalAddress', function (done) {
-          const applePay = this.recurly.ApplePay(validOpts);
+          const applePay = this.checkout.ApplePay(validOpts);
           applePay.ready(ensureDone(done, () => {
             assert.deepEqual(applePay.session.requiredBillingContactFields, ['postalAddress']);
           }));
         });
 
         it('includes the configuration billing fields', function (done) {
-          const applePay = this.recurly.ApplePay(merge({} , validOpts, {
+          const applePay = this.checkout.ApplePay(merge({} , validOpts, {
             paymentRequest: {
               requiredBillingContactFields: ['name', 'postalAddress'],
             },
@@ -516,7 +516,7 @@ function applePayTest (integrationType) {
 
       describe('merchant info collection', function () {
         beforeEach(function () {
-          this.applePay = this.recurly.ApplePay(validOpts);
+          this.applePay = this.checkout.ApplePay(validOpts);
         });
 
         it('assigns the applicationData', function (done) {
@@ -538,7 +538,7 @@ function applePayTest (integrationType) {
         });
 
         it('limits the supportedNetworks to the configuration', function (done) {
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, {
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, {
             paymentRequest: { supportedNetworks: ['visa'], },
           }));
           applePay.ready(ensureDone(done, () => {
@@ -570,7 +570,7 @@ function applePayTest (integrationType) {
         };
 
         it('populates with the form address fields when available', function (done) {
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, { form: billingAddress }));
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, { form: billingAddress }));
           applePay.ready(ensureDone(done, () => {
             assert.deepEqual(applePay.session.billingContact, billingContact);
             assert.equal(applePay.session.shippingContact, undefined);
@@ -578,8 +578,8 @@ function applePayTest (integrationType) {
         });
 
         it('populates with the pricing address when available', function (done) {
-          const pricing = this.recurly.Pricing.Checkout();
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+          const pricing = this.checkout.Pricing.Checkout();
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
           pricing.address(billingAddress).done(() => {
             applePay.ready(ensureDone(done, () => {
               assert.deepEqual(applePay.session.billingContact, billingContact);
@@ -594,9 +594,9 @@ function applePayTest (integrationType) {
             last_name: 'Brown',
             city: 'Mill Valley',
           };
-          const pricing = this.recurly.Pricing.Checkout();
+          const pricing = this.checkout.Pricing.Checkout();
           pricing.address(form).done(() => {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, { form, pricing, paymentRequest: { billingContact } }));
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, { form, pricing, paymentRequest: { billingContact } }));
             applePay.ready(ensureDone(done, () => {
               assert.deepEqual(applePay.session.billingContact, billingContact);
               assert.equal(applePay.session.shippingContact, undefined);
@@ -605,7 +605,7 @@ function applePayTest (integrationType) {
         });
 
         it('omits if there is no form or override', function (done) {
-          const applePay = this.recurly.ApplePay(validOpts);
+          const applePay = this.checkout.ApplePay(validOpts);
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.billingContact, undefined);
           }));
@@ -617,7 +617,7 @@ function applePayTest (integrationType) {
         const shippingAddress = { phone: '5555555555', };
 
         it('populates with the form address fields when available', function (done) {
-          const applePay = this.recurly.ApplePay(merge({}, validOpts, { form: shippingAddress }));
+          const applePay = this.checkout.ApplePay(merge({}, validOpts, { form: shippingAddress }));
           applePay.ready(ensureDone(done, () => {
             assert.deepEqual(applePay.session.shippingContact, shippingContact);
             assert.equal(applePay.session.billingContact, undefined);
@@ -625,9 +625,9 @@ function applePayTest (integrationType) {
         });
 
         it('populates with the pricing shipping address when available', function (done) {
-          const pricing = this.recurly.Pricing.Checkout();
+          const pricing = this.checkout.Pricing.Checkout();
           pricing.shippingAddress(shippingAddress).done(() => {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
             applePay.ready(ensureDone(done, () => {
               assert.deepEqual(applePay.session.shippingContact, shippingContact);
               assert.equal(applePay.session.billingContact, undefined);
@@ -637,9 +637,9 @@ function applePayTest (integrationType) {
 
         it('populates the shipping address with the address phone number', function (done) {
           const phone = '3333333333';
-          const pricing = this.recurly.Pricing.Checkout();
+          const pricing = this.checkout.Pricing.Checkout();
           pricing.address({ phone }).done(() => {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
             applePay.ready(ensureDone(done, () => {
               assert.deepEqual(applePay.session.shippingContact, { phoneNumber: phone, });
             }));
@@ -655,9 +655,9 @@ function applePayTest (integrationType) {
           };
 
           it('populates with the pricing address phone number when available', function (done) {
-            const pricing = this.recurly.Pricing.Checkout();
+            const pricing = this.checkout.Pricing.Checkout();
             pricing.address({ phone }).shippingAddress(fullShippingAddress).done(() => {
-              const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+              const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
               applePay.ready(ensureDone(done, () => {
                 assert.equal(applePay.session.billingContact, undefined);
                 assert.deepEqual(applePay.session.shippingContact, {
@@ -671,10 +671,10 @@ function applePayTest (integrationType) {
           });
 
           it('uses the shippingAddress phone number over the address', function (done) {
-            const pricing = this.recurly.Pricing.Checkout();
+            const pricing = this.checkout.Pricing.Checkout();
             pricing.address({ phone }).shippingAddress({ ...fullShippingAddress, ...shippingAddress })
               .done(() => {
-                const applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing }));
+                const applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing }));
                 applePay.ready(ensureDone(done, () => {
                   assert.deepEqual(applePay.session.shippingContact, {
                     givenName: 'Bobby',
@@ -692,9 +692,9 @@ function applePayTest (integrationType) {
             phone: '3333333333',
           };
 
-          const pricing = this.recurly.Pricing.Checkout();
+          const pricing = this.checkout.Pricing.Checkout();
           pricing.shippingAddress(form).done(() => {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, { form, pricing, paymentRequest: { shippingContact } }));
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, { form, pricing, paymentRequest: { shippingContact } }));
             applePay.ready(ensureDone(done, () => {
               assert.deepEqual(applePay.session.shippingContact, shippingContact);
             }));
@@ -702,7 +702,7 @@ function applePayTest (integrationType) {
         });
 
         it('omits if there is no form or override', function (done) {
-          const applePay = this.recurly.ApplePay(validOpts);
+          const applePay = this.checkout.ApplePay(validOpts);
           applePay.ready(ensureDone(done, () => {
             assert.equal(applePay.session.shippingContact, undefined);
           }));
@@ -710,7 +710,7 @@ function applePayTest (integrationType) {
       });
 
       it('emits ready when done', function (done) {
-        this.recurly.ApplePay(validOpts).on('ready', done);
+        this.checkout.ApplePay(validOpts).on('ready', done);
       });
 
       if (isBraintreeIntegration) {
@@ -721,7 +721,7 @@ function applePayTest (integrationType) {
           });
 
           it('load the libs', function (done) {
-            const applePay = this.recurly.ApplePay(validOpts);
+            const applePay = this.checkout.ApplePay(validOpts);
             applePay.on('error', ensureDone(done, (err) => {
               assert(BraintreeLoader.loadModules.calledWith('applePay', 'dataCollector'));
               assert.equal(err, applePay.initError);
@@ -731,7 +731,7 @@ function applePayTest (integrationType) {
         });
 
         it('assigns the braintree configuration', function (done) {
-          const applePay = this.recurly.ApplePay(validOpts);
+          const applePay = this.checkout.ApplePay(validOpts);
 
           applePay.on('ready', () => {
             nextTick(ensureDone(done, () => {
@@ -745,14 +745,14 @@ function applePayTest (integrationType) {
 
     describe('ApplePay.ready', function () {
       it('calls the callback once instantiated', function (done) {
-        this.recurly.ApplePay(validOpts).ready(done);
+        this.checkout.ApplePay(validOpts).ready(done);
       });
     });
 
     describe('ApplePay.begin', function () {
       it('aborts if there is an initError', function () {
         // expect empty options to induce an initError
-        let applePay = this.recurly.ApplePay();
+        let applePay = this.checkout.ApplePay();
         let result = applePay.begin();
         assert(result instanceof Error);
         assert.equal(result.code, 'apple-pay-init-error');
@@ -760,7 +760,7 @@ function applePayTest (integrationType) {
       });
 
       it('establishes a session and initiates it', function (done) {
-        let applePay = this.recurly.ApplePay(validOpts);
+        let applePay = this.checkout.ApplePay(validOpts);
         applePay.on('ready', ensureDone(done, () => {
           applePay.begin();
           assert(applePay.session instanceof ApplePaySessionStub);
@@ -768,7 +768,7 @@ function applePayTest (integrationType) {
       });
 
       it('establishes a session and initiates it without options.form', function (done) {
-        let applePay = this.recurly.ApplePay(omit(validOpts, 'form'));
+        let applePay = this.checkout.ApplePay(omit(validOpts, 'form'));
         applePay.on('ready', ensureDone(done, () => {
           applePay.begin();
           assert(applePay.session instanceof ApplePaySessionStub);
@@ -778,11 +778,11 @@ function applePayTest (integrationType) {
 
     describe('onPricingChange', function () {
       beforeEach(function () {
-        this.pricing = this.recurly.Pricing();
+        this.pricing = this.checkout.Pricing();
       });
 
       it('updates the total to reflect Pricing changes', function (done) {
-        let applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
+        let applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
         applePay.on('ready', () => {
           let originalTotal = clone(applePay.totalLineItem);
           this.pricing.on('change', ensureDone(done, () => {
@@ -795,7 +795,7 @@ function applePayTest (integrationType) {
 
     describe('internal event handlers', function () {
       beforeEach(function (done) {
-        this.applePay = this.recurly.ApplePay(validOpts);
+        this.applePay = this.checkout.ApplePay(validOpts);
         this.applePay.ready(done);
       });
 
@@ -818,7 +818,7 @@ function applePayTest (integrationType) {
 
         if (isBraintreeIntegration) {
           beforeEach(function () {
-            this.spyStartRequest = this.sandbox.spy(this.recurly.request, 'post');
+            this.spyStartRequest = this.sandbox.spy(this.checkout.request, 'post');
           });
 
           it('do not call the merchant validation start endpoint', function (done) {
@@ -829,7 +829,7 @@ function applePayTest (integrationType) {
           });
 
           it('calls the braintree performValidation with the validation url', function (done) {
-            const applePay = this.recurly.ApplePay(merge({}, validOpts, {
+            const applePay = this.checkout.ApplePay(merge({}, validOpts, {
               braintree: {
                 displayName: 'My Great Store',
               }
@@ -909,7 +909,7 @@ function applePayTest (integrationType) {
 
         describe('with options.recurringPaymentRequest set', function () {
           beforeEach(function (done) {
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { recurring: true }));
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { recurring: true }));
             this.applePay.ready(done);
           });
 
@@ -964,8 +964,8 @@ function applePayTest (integrationType) {
 
         describe('with options.pricing set', function () {
           beforeEach(function (done) {
-            this.pricing = this.recurly.Pricing.Checkout();
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
+            this.pricing = this.checkout.Pricing.Checkout();
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
             this.pricing.adjustment({ amount: 10 }).done(() => {
               this.applePay.ready(done);
             });
@@ -1021,7 +1021,7 @@ function applePayTest (integrationType) {
 
         describe('with options.recurringPaymentRequest set', function () {
           beforeEach(function (done) {
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { recurring: true }));
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { recurring: true }));
             this.applePay.ready(ensureDone(done, () => {
               this.applePay.begin();
             }));
@@ -1038,8 +1038,8 @@ function applePayTest (integrationType) {
 
         describe('with options.pricing set', function () {
           beforeEach(function (done) {
-            this.pricing = this.recurly.Pricing.Checkout();
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
+            this.pricing = this.checkout.Pricing.Checkout();
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
             this.pricing.adjustment({ amount: 10 }).done(() => {
               this.applePay.ready(done);
             });
@@ -1096,7 +1096,7 @@ function applePayTest (integrationType) {
 
         describe('with options.recurringPaymentRequest set', function () {
           beforeEach(function (done) {
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { recurring: true }));
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { recurring: true }));
             this.applePay.ready(ensureDone(done, () => {
               this.applePay.begin();
             }));
@@ -1144,7 +1144,7 @@ function applePayTest (integrationType) {
 
         describe('with options.recurringPaymentRequest set', function () {
           beforeEach(function (done) {
-            this.applePay = this.recurly.ApplePay(merge({}, validOpts, { recurring: true }));
+            this.applePay = this.checkout.ApplePay(merge({}, validOpts, { recurring: true }));
             this.applePay.ready(ensureDone(done, () => {
               this.applePay.begin();
             }));
@@ -1217,14 +1217,14 @@ function applePayTest (integrationType) {
               assert.deepEqual(event, {
                 payment: {
                   gatewayToken: 'TOKENIZED_PAYLOAD',
-                  recurlyToken: token,
+                  checkoutToken: token,
                   ...validAuthorizeEvent.payment,
                 },
               });
             } else {
               assert.deepEqual(event, {
                 payment: {
-                  recurlyToken: token,
+                  checkoutToken: token,
                   ...validAuthorizeEvent.payment,
                 },
               });
@@ -1272,7 +1272,7 @@ function applePayTest (integrationType) {
 
         if (isDirectIntegration) {
           it('pass the expected parameters to create the token', function (done) {
-            this.spyTokenRequest = this.sandbox.spy(this.recurly.request, 'post');
+            this.spyTokenRequest = this.sandbox.spy(this.checkout.request, 'post');
 
             this.applePay.session.onpaymentauthorized(clone(validAuthorizeEvent));
             this.applePay.on('token', ensureDone(done, () => {
@@ -1287,8 +1287,8 @@ function applePayTest (integrationType) {
 
           it('when kount is selected, pass the expected parameters to create the token', function (done) {
             beforeEach(function () {
-              const recurly = this.recurly = initCheckout();
-              recurly.configure({
+              const checkout = this.checkout = initCheckout();
+              checkout.configure({
                 fraud: {
                   kount: {
                     dataCollector: true,
@@ -1296,10 +1296,10 @@ function applePayTest (integrationType) {
                   }
                 }
               });
-              this.recurly.fraud.profile = { processor: 'kount', sessionId: 'KOUNT_SESSION_ID', udf: {} };
+              this.checkout.fraud.profile = { processor: 'kount', sessionId: 'KOUNT_SESSION_ID', udf: {} };
             });
 
-            this.spyTokenRequest = this.sandbox.spy(this.recurly.request, 'post');
+            this.spyTokenRequest = this.sandbox.spy(this.checkout.request, 'post');
 
             this.applePay.session.onpaymentauthorized(clone(validAuthorizeEvent));
             this.applePay.on('token', ensureDone(done, () => {
@@ -1319,7 +1319,7 @@ function applePayTest (integrationType) {
           });
 
           it('passes the non address parameters to create the token', function (done) {
-            this.spyTokenRequest = this.sandbox.spy(this.recurly.request, 'post');
+            this.spyTokenRequest = this.sandbox.spy(this.checkout.request, 'post');
             this.applePay.config.form = clone(inputNotAddressFields);
             this.applePay.begin(); // the form has changed!
 
@@ -1338,7 +1338,7 @@ function applePayTest (integrationType) {
 
         if (isBraintreeIntegration) {
           it('pass the expected parameters to create the token', function (done) {
-            this.spyTokenRequest = this.sandbox.spy(this.recurly.request, 'post');
+            this.spyTokenRequest = this.sandbox.spy(this.checkout.request, 'post');
 
             this.applePay.session.onpaymentauthorized(clone(validAuthorizeEvent));
             this.applePay.on('token', ensureDone(done, () => {
@@ -1400,8 +1400,8 @@ function applePayTest (integrationType) {
         ['address', 'shippingAddress'].forEach(function (addressType) {
           describe(`with options.pricing set and ${addressType} configured`, function () {
             beforeEach(function (done) {
-              this.pricing = this.recurly.Pricing.Checkout();
-              this.applePay = this.recurly.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
+              this.pricing = this.checkout.Pricing.Checkout();
+              this.applePay = this.checkout.ApplePay(merge({}, validOpts, { pricing: this.pricing }));
               this.pricing[addressType]({ postalCode: '91411', countryCode: 'US' }).done(() => {
                 this.applePay.ready(ensureDone(done,() => {
                   this.applePay.begin();

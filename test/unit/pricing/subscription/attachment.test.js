@@ -1,13 +1,13 @@
 import assert from 'assert';
 import { applyFixtures } from '../../support/fixtures';
-import { initRecurly } from '../../support/helpers';
-import PricingAttachment from '../../../../lib/recurly/pricing/subscription/attachment';
+import { initCheckout } from '../../support/helpers';
+import PricingAttachment from '../../../../lib/checkout/pricing/subscription/attachment';
 
-describe('Recurly.Pricing.attach', function () {
+describe('Checkout.Pricing.attach', function () {
   beforeEach(function (done) {
-    this.recurly = initRecurly();
-    this.recurly.ready(done);
-    this.pricing = this.recurly.Pricing();
+    this.checkout = initCheckout();
+    this.checkout.ready(done);
+    this.pricing = this.checkout.Pricing();
   });
 
   applyFixtures();
@@ -166,8 +166,8 @@ describe('Recurly.Pricing.attach', function () {
 
         it('outputs the tax amounts exactly as given', function (done) {
           this.pricing.on('change', () => {
-            assert.strictEqual(container().querySelector('[data-recurly=tax_now]').innerHTML, '20.00');
-            assert.strictEqual(container().querySelector('[data-recurly=tax_next]').innerHTML, '10.00');
+            assert.strictEqual(container().querySelector('[data-checkout=tax_now]').innerHTML, '20.00');
+            assert.strictEqual(container().querySelector('[data-checkout=tax_next]').innerHTML, '10.00');
             done();
           });
         });

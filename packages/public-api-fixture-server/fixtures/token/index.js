@@ -1,5 +1,5 @@
 /**
- * Recurly standard magic decline number
+ * Checkout standard magic decline number
  */
 
 var DECLINE_CARD = '4000000000000002';

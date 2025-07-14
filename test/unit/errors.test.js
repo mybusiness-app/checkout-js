@@ -1,5 +1,5 @@
 import assert from 'assert';
-import errors from '../../lib/recurly/errors';
+import errors from '../../lib/checkout/errors';
 import { initCheckout } from './support/helpers';
 
 describe('errors', () => {
@@ -7,7 +7,7 @@ describe('errors', () => {
   const invalid = 'an-invalid-error';
 
   beforeEach(function () {
-    this.recurly = initCheckout();
+    this.checkout = initCheckout();
   });
 
   it('throws when the requested error is not in the directory', function () {
@@ -20,7 +20,7 @@ describe('errors', () => {
   });
 
   it('will report an error if given a reporter', function () {
-    const reporter = this.recurly.reporter;
+    const reporter = this.checkout.reporter;
     reporter.send.reset();
     errors(valid, { some: 'context' }, { reporter });
     assert(reporter.send.calledOnce);

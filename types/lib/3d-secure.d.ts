@@ -11,7 +11,7 @@ export interface ThreeDSecureEmitter extends Emitter<ThreeDSecureEvent> {
 
 export type RiskOptions = {
   /**
-   * `three_d_secure_action_token_id` returned by the Recurly API when 3-D Secure authentication is required for a
+   * `three_d_secure_action_token_id` returned by the Checkout API when 3-D Secure authentication is required for a
    * transaction.
    *
    * @see {@link https://developers.recurly.com/reference/recurly-js/index.html#fn-recurlythreedsecure|ThreeDSecure}

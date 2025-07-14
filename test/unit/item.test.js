@@ -1,25 +1,25 @@
 import assert from 'assert';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { initCheckout } from './support/helpers';
 
 describe('Checkout.item', () => {
   beforeEach(function () {
     this.sandbox = sinon.createSandbox();
-    this.recurly = initCheckout();
+    this.checkout = initCheckout();
     this.valid = { itemCode: 'basic-item' };
     this.invalid = { itemCode: 'invalid' };
   });
 
   it('requires an itemCode', function () {
-    const { recurly } = this;
-    assert.throws(() => recurly.item(), { message: 'Option itemCode must be a String' });
+    const { checkout } = this;
+    assert.throws(() => checkout.item(), { message: 'Option itemCode must be a String' });
   });
 
   it('requires Checkout.configure', function (done) {
     const { sandbox, valid } = this;
-    const recurly = new Checkout();
+    const checkout = new Checkout();
     const stub = sandbox.stub();
-    recurly.item(valid)
+    checkout.item(valid)
       .then(stub)
       .catch(err => {
         assert(stub.notCalled);
@@ -30,9 +30,9 @@ describe('Checkout.item', () => {
 
   describe('when given an invalid itemCode', function () {
     it('rejects with an error', function (done) {
-      const { invalid, recurly, sandbox } = this;
+      const { invalid, checkout, sandbox } = this;
       const stub = sandbox.stub();
-      recurly.item(invalid)
+      checkout.item(invalid)
         .then(stub)
         .catch(err => {
           assert(stub.notCalled);
@@ -45,9 +45,9 @@ describe('Checkout.item', () => {
 
   describe('when given a valid itemCode', function () {
     it('resolves with an item', function (done) {
-      const { recurly, sandbox, valid } = this;
+      const { checkout, sandbox, valid } = this;
       const stub = sandbox.stub();
-      recurly.item(valid)
+      checkout.item(valid)
         .catch(stub)
         .then(item => {
           assert(stub.notCalled);

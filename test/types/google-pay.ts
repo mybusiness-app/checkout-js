@@ -1,20 +1,20 @@
 import {
   GooglePayPaymentData,
   GooglePayPaymentAuthorizationResult,
-} from '@recurly/recurly-js';
+} from '@mybusinessapp/checkout-js';
 
 export default function googlePay () {
-  window.recurly.GooglePay({
+  window.checkout.GooglePay({
     currency: 'USD',
     country: 'US',
     total: '1.00',
-    googleMerchantId: 'RECURLY',
-    googleBusinessName: 'RECURLY',
+    googleMerchantId: 'CHECKOUT',
+    googleBusinessName: 'CHECKOUT',
     gatewayCode: 'abc123',
     requireBillingAddress: true,
   });
 
-  window.recurly.GooglePay({
+  window.checkout.GooglePay({
     currency: 'USD',
     country: 'US',
     total: '1.00',
@@ -22,8 +22,8 @@ export default function googlePay () {
     paymentDataRequest: {
       emailRequired: true,
       merchantInfo: {
-        merchantId: 'RECURLY',
-        merchantName: 'RECURLY',
+        merchantId: 'CHECKOUT',
+        merchantName: 'CHECKOUT',
       },
       transactionInfo: {
         displayItems: [

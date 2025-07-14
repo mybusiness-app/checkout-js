@@ -1,15 +1,15 @@
 import assert from 'assert';
 import { applyFixtures } from '../../support/fixtures';
-import { initRecurly } from '../../support/helpers';
-import CheckoutPricingAttachment from '../../../../lib/recurly/pricing/checkout/attachment';
+import { initCheckout } from '../../support/helpers';
+import CheckoutPricingAttachment from '../../../../lib/checkout/pricing/checkout/attachment';
 
 const container = () => window.document.querySelector('#test-pricing');
 
 describe('CheckoutPricing#attach', function () {
   beforeEach(function (done) {
-    this.recurly = initRecurly();
-    this.recurly.ready(done);
-    this.pricing = this.recurly.Pricing.Checkout();
+    this.checkout = initCheckout();
+    this.checkout.ready(done);
+    this.pricing = this.checkout.Pricing.Checkout();
   });
 
   applyFixtures();
@@ -156,18 +156,18 @@ describe('CheckoutPricing#attach', function () {
         assert.equal(this.pricing.price.next.giftCard, '0.00');
         assert.equal(this.pricing.price.now.taxes, '0.00');
         assert.equal(this.pricing.price.next.taxes, '0.00');
-        assert.equal(container().querySelector('[data-recurly="currency_code"]').innerHTML, 'USD');
-        assert.equal(container().querySelector('[data-recurly="currency_symbol"]').innerHTML, '$');
-        assert.equal(container().querySelector('[data-recurly="total_now"]').innerHTML, this.pricing.price.now.total);
-        assert.equal(container().querySelector('[data-recurly="total_next"]').innerHTML, this.pricing.price.next.total);
-        assert.equal(container().querySelector('[data-recurly="subtotal_now"]').innerHTML, this.pricing.price.now.subtotal);
-        assert.equal(container().querySelector('[data-recurly="subtotal_next"]').innerHTML, this.pricing.price.next.subtotal);
-        assert.equal(container().querySelector('[data-recurly="subscriptions_now"]').innerHTML, this.pricing.price.now.subscriptions);
-        assert.equal(container().querySelector('[data-recurly="subscriptions_next"]').innerHTML, this.pricing.price.next.subscriptions);
-        assert.equal(container().querySelector('[data-recurly="adjustments_now"]').innerHTML, this.pricing.price.now.adjustments);
-        assert.equal(container().querySelector('[data-recurly="adjustments_next"]').innerHTML, this.pricing.price.next.adjustments);
-        assert.equal(container().querySelector('[data-recurly="taxes_now"]').innerHTML, this.pricing.price.now.taxes);
-        assert.equal(container().querySelector('[data-recurly="taxes_next"]').innerHTML, this.pricing.price.next.taxes);
+        assert.equal(container().querySelector('[data-checkout="currency_code"]').innerHTML, 'USD');
+        assert.equal(container().querySelector('[data-checkout="currency_symbol"]').innerHTML, '$');
+        assert.equal(container().querySelector('[data-checkout="total_now"]').innerHTML, this.pricing.price.now.total);
+        assert.equal(container().querySelector('[data-checkout="total_next"]').innerHTML, this.pricing.price.next.total);
+        assert.equal(container().querySelector('[data-checkout="subtotal_now"]').innerHTML, this.pricing.price.now.subtotal);
+        assert.equal(container().querySelector('[data-checkout="subtotal_next"]').innerHTML, this.pricing.price.next.subtotal);
+        assert.equal(container().querySelector('[data-checkout="subscriptions_now"]').innerHTML, this.pricing.price.now.subscriptions);
+        assert.equal(container().querySelector('[data-checkout="subscriptions_next"]').innerHTML, this.pricing.price.next.subscriptions);
+        assert.equal(container().querySelector('[data-checkout="adjustments_now"]').innerHTML, this.pricing.price.now.adjustments);
+        assert.equal(container().querySelector('[data-checkout="adjustments_next"]').innerHTML, this.pricing.price.next.adjustments);
+        assert.equal(container().querySelector('[data-checkout="taxes_now"]').innerHTML, this.pricing.price.now.taxes);
+        assert.equal(container().querySelector('[data-checkout="taxes_next"]').innerHTML, this.pricing.price.next.taxes);
         done();
       });
     });
@@ -233,8 +233,8 @@ describe('CheckoutPricing#attach', function () {
           this.pricing.on('change', () => {
             // HACK: await application of taxes
             if (!this.pricing.items.tax) return;
-            assert.strictEqual(container().querySelector('[data-recurly=taxes_now]').innerHTML, '20.00');
-            assert.strictEqual(container().querySelector('[data-recurly=taxes_next]').innerHTML, '10.00');
+            assert.strictEqual(container().querySelector('[data-checkout=taxes_now]').innerHTML, '20.00');
+            assert.strictEqual(container().querySelector('[data-checkout=taxes_next]').innerHTML, '10.00');
             done();
           });
         });

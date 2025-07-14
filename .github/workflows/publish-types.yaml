@@ -47,4 +47,4 @@ jobs:
 
             View the full checkout-js release [here](https://github.com/mybusiness-app/checkout-js/releases/tag/v${{ steps.create-changes.outputs.version }})
 
-            Note: This is an automated pull request. For more info, see the [Recurly.js](https://github.com/mybusiness-app/checkout-js) repository or [documentation](https://developers.mybusinessapp.co.za/reference/checkout-js/index.html).
+            Note: This is an automated pull request. For more info, see the [Checkout.js](https://github.com/mybusiness-app/checkout-js) repository or [documentation](https://developers.mybusinessapp.co.za/reference/checkout-js/index.html).

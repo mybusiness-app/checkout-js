@@ -332,5 +332,5 @@ export type GooglePayPaymentData = {
     administrativeArea: string;
     sortingCode: string;
   };
-  recurlyToken: TokenPayload;
+  checkoutToken: TokenPayload;
 };

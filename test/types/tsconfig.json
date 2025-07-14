@@ -10,7 +10,7 @@
     "types": [],
     "baseUrl": "../../types",
     "paths": {
-      "@recurly/recurly-js": ["./"]
+      "@mybusinessapp/checkout-js": ["./"]
     }
   }
 }

@@ -1,32 +1,32 @@
 import bowser from 'bowser';
 import merge from 'lodash.merge';
-import { Recurly } from '../../../lib/recurly';
+import { Checkout } from '../../../lib/checkout';
 import BraintreeLoader from '../../../lib/util/braintree-loader';
 
 import Promise from 'promise';
 
 /**
- * initializes a Recurly instance designed for testing
- * @param  {[Recurly]} recurly
+ * initializes a Checkout instance designed for testing
+ * @param  {[Checkout]} checkout
  * @param  {Object} opts
- * @return {Recurly}
+ * @return {Checkout}
  */
-export function initRecurly (recurly, opts) {
-  if (!(recurly instanceof Recurly)) {
-    if (!opts) opts = recurly;
+export function initCheckout (checkout, opts) {
+  if (!(checkout instanceof Checkout)) {
+    if (!opts) opts = checkout;
 
-    recurly = new Recurly;
+    checkout = new Checkout;
 
     // prevents itinerant event logging workers from dispatching
-    sinon.stub(recurly.reporter, 'send');
+    sinon.stub(checkout.reporter, 'send');
   }
 
-  recurly.configure(merge({
+  checkout.configure(merge({
     publicKey: 'test',
     api: `${window.location.protocol}//${window.location.host}/api`
   }, opts));
 
-  return recurly;
+  return checkout;
 }
 
 export function testBed () {
@@ -107,7 +107,7 @@ export function stubWindowOpen () {
     this.windowOpenSandbox = sinon.createSandbox();
 
     this.windowOpenSandbox.stub(window, 'open').callsFake(url => {
-      this.newWindowEventName = url.match(/(recurly-frame-\w+-\w+)/)[0];
+      this.newWindowEventName = url.match(/(checkout-frame-\w+-\w+)/)[0];
       return this.newWindow;
     });
   });

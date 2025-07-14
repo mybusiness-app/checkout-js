@@ -1,4 +1,4 @@
-import { TokenHandler, BacsBillingInfo, BecsBillingInfo } from '@recurly/recurly-js';
+import { TokenHandler, BacsBillingInfo, BecsBillingInfo } from '@mybusinessapp/checkout-js';
 
 export default function bankAccount () {
   const handleToken: TokenHandler = (err, token) => {
@@ -14,7 +14,7 @@ export default function bankAccount () {
   const formEl = document.querySelector('form');
 
   if (formEl) {
-    window.recurly.bankAccount.token(formEl, handleToken);
+    window.checkout.bankAccount.token(formEl, handleToken);
   }
 
   const billingInfo = {
@@ -33,17 +33,17 @@ export default function bankAccount () {
     vat_number: 'SE0000',
   };
 
-  window.recurly.bankAccount.token(billingInfo, handleToken);
+  window.checkout.bankAccount.token(billingInfo, handleToken);
 
   const div = document.querySelector('div');
 
   if (div) {
     // @ts-expect-error
-    window.recurly.bankAccount.token(document.querySelector('div'), handleToken);
+    window.checkout.bankAccount.token(document.querySelector('div'), handleToken);
   }
 
   // @ts-expect-error
-  window.recurly.bankAccount.token('selector', handleToken);
+  window.checkout.bankAccount.token('selector', handleToken);
 
   const minimalBacsBillingInfo: BacsBillingInfo = {
     type: 'bacs',
@@ -53,7 +53,7 @@ export default function bankAccount () {
     name_on_account: '1234'
   };
 
-  window.recurly.bankAccount.token(minimalBacsBillingInfo, handleToken);
+  window.checkout.bankAccount.token(minimalBacsBillingInfo, handleToken);
 
   const minimalBecsBillingInfo: BecsBillingInfo = {
     type: 'becs',
@@ -63,7 +63,7 @@ export default function bankAccount () {
     name_on_account: '1234',
   };
 
-  window.recurly.bankAccount.token(minimalBecsBillingInfo, handleToken);
+  window.checkout.bankAccount.token(minimalBecsBillingInfo, handleToken);
 
   // @ts-expect-error
   const missingNameOnAccountBacsBillingInfo: BacsBillingInfo = {
@@ -100,12 +100,12 @@ export default function bankAccount () {
     vat_number: 'asdf'
   };
 
-  window.recurly.bankAccount.token(addressBecsBillingInfo, handleToken);
+  window.checkout.bankAccount.token(addressBecsBillingInfo, handleToken);
 
   const sepaBillingInfo = {
     iban: 'my-iban-number',
     name_on_account: 'name'
   };
 
-  window.recurly.bankAccount.token(sepaBillingInfo, handleToken);
+  window.checkout.bankAccount.token(sepaBillingInfo, handleToken);
 }

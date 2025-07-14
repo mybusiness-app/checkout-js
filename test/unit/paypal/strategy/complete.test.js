@@ -2,7 +2,7 @@ import assert from 'assert';
 import { applyFixtures } from '../../support/fixtures';
 
 import {
-  initRecurly,
+  initCheckout,
   stubWindowOpen
 } from '../../support/helpers';
 
@@ -16,10 +16,10 @@ describe('CompleteStrategy', function () {
   beforeEach(function () {
     const target = this.target = '#test-form';
     this.sandbox = sinon.createSandbox();
-    this.recurly = initRecurly();
+    this.checkout = initCheckout();
     this.payPalSdkButtonRenderStub = sinon.stub();
     window.paypal = this.paypalSdkStub = { Buttons: sinon.stub().returns({ render: this.payPalSdkButtonRenderStub }) };
-    this.initPaypal = (opts = { payPalComplete: { target } }) => this.recurly.PayPal(opts);
+    this.initPaypal = (opts = { payPalComplete: { target } }) => this.checkout.PayPal(opts);
     this.paypalInitialized = async () => {
       while (this.paypalSdkStub.Buttons.callCount === 0) {
         await new Promise(res => setTimeout(() => res(), 100));
@@ -123,14 +123,14 @@ describe('CompleteStrategy', function () {
 
   describe('start [deprecated]', () => {
     beforeEach(function () {
-      this.sandbox.spy(this.recurly, 'Frame');
+      this.sandbox.spy(this.checkout, 'Frame');
     });
 
     it('opens iframe with PayPal Complete start path', function () {
       const paypal = this.initPaypal({ payPalComplete: true });
       paypal.start();
 
-      assert(this.recurly.Frame.calledWith(sinon.match({
+      assert(this.checkout.Frame.calledWith(sinon.match({
         path: '/paypal_complete/start',
         payload: {}
       })));
@@ -141,8 +141,8 @@ describe('CompleteStrategy', function () {
       const paypal = this.initPaypal({ payPalComplete: true, gatewayCode });
       paypal.start();
 
-      assert(this.recurly.Frame.calledOnce);
-      assert(this.recurly.Frame.calledWith(sinon.match({
+      assert(this.checkout.Frame.calledOnce);
+      assert(this.checkout.Frame.calledWith(sinon.match({
         path: '/paypal_complete/start',
         payload: {
           gateway_code: gatewayCode

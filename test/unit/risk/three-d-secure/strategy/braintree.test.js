@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import BraintreeStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/braintree';
+import { initCheckout, testBed } from '../../../support/helpers';
+import BraintreeStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/braintree';
 import BraintreeLoader from '../../../../../lib/util/braintree-loader';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-braintree.json';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-braintree.json';
 
 describe('BraintreeStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -11,8 +11,8 @@ describe('BraintreeStrategy', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initRecurly();
-    const risk = recurly.Risk();
+    const checkout = this.checkout = initCheckout();
+    const risk = checkout.Risk();
     const threeDSecure = this.threeDSecure = risk.ThreeDSecure({ actionTokenId: 'action-token-test' });
     this.target = testBed().querySelector('#three-d-secure-container');
     this.sandbox = sinon.createSandbox();
@@ -123,7 +123,7 @@ describe('BraintreeStrategy', function () {
 
   describe('preflight', function () {
     beforeEach(function () {
-      const { recurly } = this;
+      const { checkout } = this;
       this.number = '4111111111111111';
       this.month = '01';
       this.year = '2023';
@@ -140,13 +140,13 @@ describe('BraintreeStrategy', function () {
         state: 'CA',
       };
 
-      recurly.config.risk.threeDSecure.proactive = {
+      checkout.config.risk.threeDSecure.proactive = {
         enabled: true,
         gatewayCode: 'test-gateway-code',
         amount: 50,
         currency: 'USD'
       };
-      recurly.request.post = sinon.stub().resolves({
+      checkout.request.post = sinon.stub().resolves({
         paymentMethodNonce: 'test-braintree-nonce',
         clientToken: '1234',
         bin: '411111',
@@ -154,10 +154,10 @@ describe('BraintreeStrategy', function () {
     });
 
     it('sends the correct data', function (done) {
-      const { recurly, number, month, year, cvv, addressFields } = this;
+      const { checkout, number, month, year, cvv, addressFields } = this;
 
-      BraintreeStrategy.preflight({ recurly, number, month, year, cvv, addressFields }).then(() => {
-        sinon.assert.calledWithExactly(recurly.request.post, {
+      BraintreeStrategy.preflight({ checkout, number, month, year, cvv, addressFields }).then(() => {
+        sinon.assert.calledWithExactly(checkout.request.post, {
           route: '/risk/authentications',
           data: {
             gateway_type: BraintreeStrategy.strategyName,

@@ -1,5 +1,5 @@
 export default function alternativePaymentMethods () {
-  const apm = window.recurly.AlternativePaymentMethods({
+  const apm = window.checkout.AlternativePaymentMethods({
     allowedPaymentMethods: ['ideal', 'sofort', 'cashapp'],
     blockedPaymentMethods: ['bacs'],
     containerSelector: '#payment-methods',

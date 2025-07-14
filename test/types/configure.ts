@@ -1,6 +1,6 @@
 export default function configure () {
-  window.recurly.configure('my-public-key');
-  window.recurly.configure({
+  window.checkout.configure('my-public-key');
+  window.checkout.configure({
     cors: true,
     currency: 'USD',
     fraud: {
@@ -36,7 +36,7 @@ export default function configure () {
     }
   };
 
-  window.recurly.configure({
+  window.checkout.configure({
     publicKey: 'my-public-key',
     fields: {
       all: elementOptions,
@@ -67,7 +67,7 @@ export default function configure () {
   });
 
   // @ts-expect-error
-  window.recurly.configure({
+  window.checkout.configure({
     cors: true,
     currency: 'USD',
     fraud: {

@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import CybersourceStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/cybersource';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-cybersource.json';
+import { initCheckout, testBed } from '../../../support/helpers';
+import CybersourceStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/cybersource';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-cybersource.json';
 import Promise from 'promise';
-import { Frame } from '../../../../../lib/recurly/frame';
+import { Frame } from '../../../../../lib/checkout/frame';
 
 describe('CybersourceStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -12,13 +12,13 @@ describe('CybersourceStrategy', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initRecurly();
-    const risk = recurly.Risk();
+    const checkout = this.checkout = initCheckout();
+    const risk = checkout.Risk();
     const threeDSecure = this.threeDSecure = risk.ThreeDSecure({ actionTokenId: 'action-token-test' });
     this.target = testBed().querySelector('#three-d-secure-container');
 
     this.sandbox = sinon.createSandbox();
-    this.sandbox.spy(recurly, 'Frame');
+    this.sandbox.spy(checkout, 'Frame');
 
     this.Strategy = CybersourceStrategy;
     this.strategy = new CybersourceStrategy({ threeDSecure, actionToken });
@@ -33,7 +33,7 @@ describe('CybersourceStrategy', function () {
 
   describe('CybersourceStrategy.preflight', function () {
     beforeEach(function () {
-      const { recurly } = this;
+      const { checkout } = this;
       this.sessionId = 'test-cybersource-session-id';
       this.number = '4111111111111111';
       this.month = '01';
@@ -42,7 +42,7 @@ describe('CybersourceStrategy', function () {
       this.jwt = 'test-preflight-jwt';
       this.poll = setInterval(() => {
         // Stubs expected message format from Cybersource DDC
-        recurly.bus.emit('raw-message', {
+        checkout.bus.emit('raw-message', {
           data: JSON.stringify({
             MessageType: 'profile.completed',
             SessionId: this.sessionId
@@ -52,9 +52,9 @@ describe('CybersourceStrategy', function () {
     });
 
     it('returns a promise', function (done) {
-      const { recurly, Strategy, number, month, year, gateway_code, poll } = this;
+      const { checkout, Strategy, number, month, year, gateway_code, poll } = this;
 
-      const retValue = Strategy.preflight({ recurly, number, month, year, gateway_code }).then(() => {
+      const retValue = Strategy.preflight({ checkout, number, month, year, gateway_code }).then(() => {
         clearInterval(poll);
         done();
       });
@@ -63,11 +63,11 @@ describe('CybersourceStrategy', function () {
     });
 
     it('constructs a frame to collect a session id', function (done) {
-      const { recurly, Strategy, number, month, year, gateway_code, jwt, poll } = this;
+      const { checkout, Strategy, number, month, year, gateway_code, jwt, poll } = this;
 
-      Strategy.preflight({ recurly, number, month, year, gateway_code }).then(() => {
-        sinon.assert.callCount(recurly.Frame, 1);
-        assert(recurly.Frame.calledWithMatch({
+      Strategy.preflight({ checkout, number, month, year, gateway_code }).then(() => {
+        sinon.assert.callCount(checkout.Frame, 1);
+        assert(checkout.Frame.calledWithMatch({
           path: '/risk/data_collector',
           payload: {
             jwt,
@@ -84,9 +84,9 @@ describe('CybersourceStrategy', function () {
     });
 
     it('resolves when a session id is received', function (done) {
-      const { recurly, Strategy, sessionId, number, month, year, gateway_code, poll } = this;
+      const { checkout, Strategy, sessionId, number, month, year, gateway_code, poll } = this;
 
-      Strategy.preflight({ recurly, number, month, year, gateway_code }).then(preflightResponse => {
+      Strategy.preflight({ checkout, number, month, year, gateway_code }).then(preflightResponse => {
         assert.strictEqual(preflightResponse.results.session_id, sessionId);
 
         clearInterval(poll);
@@ -97,16 +97,16 @@ describe('CybersourceStrategy', function () {
     describe('device data collection', function () {
       describe('device data collection disabled when set to false', function () {
         beforeEach(function () {
-          this.recurly.config.risk.threeDSecure.preflightDeviceDataCollector = {
+          this.checkout.config.risk.threeDSecure.preflightDeviceDataCollector = {
             enabled: false
           };
         });
 
         it('does not construct a frame to collect a session id', function (done) {
-          const { recurly, Strategy, number, month, year, gateway_code } = this;
+          const { checkout, Strategy, number, month, year, gateway_code } = this;
 
-          Strategy.preflight({ recurly, number, month, year, gateway_code }).then(() => {
-            sinon.assert.callCount(recurly.Frame, 0);
+          Strategy.preflight({ checkout, number, month, year, gateway_code }).then(() => {
+            sinon.assert.callCount(checkout.Frame, 0);
             done();
           });
         });
@@ -114,16 +114,16 @@ describe('CybersourceStrategy', function () {
 
       describe('device data collection enabled when set to true', function () {
         beforeEach(function () {
-          this.recurly.config.risk.threeDSecure.preflightDeviceDataCollector = {
+          this.checkout.config.risk.threeDSecure.preflightDeviceDataCollector = {
             enabled: true
           };
         });
   
         it('does construct a frame to collect a session id', function (done) {
-          const { recurly, Strategy, number, month, year, gateway_code } = this;
+          const { checkout, Strategy, number, month, year, gateway_code } = this;
   
-          Strategy.preflight({ recurly, number, month, year, gateway_code }).then(() => {
-            sinon.assert.callCount(recurly.Frame, 1);
+          Strategy.preflight({ checkout, number, month, year, gateway_code }).then(() => {
+            sinon.assert.callCount(checkout.Frame, 1);
             done();
           });
         });
@@ -131,17 +131,17 @@ describe('CybersourceStrategy', function () {
 
       describe('device data collection enabled when object is preset', function () {
         beforeEach(function () {
-          this.recurly.config.risk.threeDSecure.preflightDeviceDataCollector = {
+          this.checkout.config.risk.threeDSecure.preflightDeviceDataCollector = {
             enabled: true,
             billingInfoId: 'test-billing-info-id',
           };
         });
   
         it('does construct a frame to collect a session id', function (done) {
-          const { recurly, Strategy, number, month, year, gateway_code } = this;
+          const { checkout, Strategy, number, month, year, gateway_code } = this;
   
-          Strategy.preflight({ recurly, number, month, year, gateway_code }).then(() => {
-            sinon.assert.callCount(recurly.Frame, 1);
+          Strategy.preflight({ checkout, number, month, year, gateway_code }).then(() => {
+            sinon.assert.callCount(checkout.Frame, 1);
             done();
           });
         });
@@ -151,10 +151,10 @@ describe('CybersourceStrategy', function () {
 
   describe('attach', function () {
     it('creates a frame using the actionToken params', function () {
-      const { strategy, target, recurly } = this;
+      const { strategy, target, checkout } = this;
       strategy.attach(target);
-      assert(recurly.Frame.calledOnce);
-      assert(recurly.Frame.calledWithMatch({
+      assert(checkout.Frame.calledOnce);
+      assert(checkout.Frame.calledWithMatch({
         path: '/three_d_secure/start',
         payload: {
           redirect_url: actionToken.three_d_secure.params.redirect_url,

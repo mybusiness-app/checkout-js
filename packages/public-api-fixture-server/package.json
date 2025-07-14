@@ -1,10 +1,10 @@
 {
-  "name": "@recurly/public-api-test-server",
+  "name": "@mybusinessapp/public-api-test-server",
   "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:recurly/recurly-js.git",
+    "url": "git@github.com:mybusiness-app/checkout-js.git",
     "directory": "packages/public-api-test-server"
   },
   "private": true,

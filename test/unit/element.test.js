@@ -1,7 +1,7 @@
 import { applyFixtures } from './support/fixtures';
 import assert from 'assert';
-import Element from '../../lib/recurly/element';
-import Elements from '../../lib/recurly/elements';
+import Element from '../../lib/checkout/element';
+import Elements from '../../lib/checkout/elements';
 import { initCheckout, createNativeEvent, stubAsNonMobileDevice, stubAsMobileDevice } from './support/helpers';
 
 describe('Element', function () {
@@ -14,8 +14,8 @@ describe('Element', function () {
   this.ctx.fixture = 'elements';
 
   beforeEach(function () {
-    const recurly = this.recurly = initCheckout();
-    const elements = this.elements = new ElementsStub({ recurly });
+    const checkout = this.checkout = initCheckout();
+    const elements = this.elements = new ElementsStub({ checkout });
     const validConfig = this.validConfig = {
       displayIcon: true,
       inputType: 'select',
@@ -32,7 +32,7 @@ describe('Element', function () {
       ...validConfig
     };
     const element = this.element = new Element(validOptions);
-    this.validParentSelector = '#recurly-elements';
+    this.validParentSelector = '#checkout-elements';
     this.validParentElement = document.querySelector(this.validParentSelector);
 
     // These simulate messages an element expects to receive from a frame
@@ -142,7 +142,7 @@ describe('Element', function () {
 
       describe('to a different parent', function () {
         beforeEach(function () {
-          this.validParentElementTwo = document.querySelector('#recurly-elements-two');
+          this.validParentElementTwo = document.querySelector('#checkout-elements-two');
         });
 
         it(`removes the element from the previous parent
@@ -359,14 +359,14 @@ describe('Element', function () {
 
   describe('Element.config', function () {
     it('returns an object containing all current config and additional attributes', function () {
-      const { element, recurly, validConfig } = this;
+      const { element, checkout, validConfig } = this;
       assert.deepEqual(this.element.config, {
         ...validConfig,
         busGroupId: element.bus.groupId,
-        deviceId: recurly.deviceId,
+        deviceId: checkout.deviceId,
         elementId: element.id,
-        recurly: recurly.config,
-        sessionId: recurly.sessionId,
+        checkout: checkout.config,
+        sessionId: checkout.sessionId,
         type: element.type
       });
     });
@@ -454,7 +454,7 @@ describe('Element', function () {
       assert.strictEqual(iframe.getAttribute('allowtransparency'), 'true');
       assert.strictEqual(iframe.getAttribute('frameborder'), '0');
       assert.strictEqual(iframe.getAttribute('scrolling'), 'no');
-      assert.strictEqual(iframe.getAttribute('name'), `recurly-element--${id}`);
+      assert.strictEqual(iframe.getAttribute('name'), `checkout-element--${id}`);
       assert.strictEqual(iframe.getAttribute('allowpaymentrequest'), 'true');
       assert.strictEqual(iframe.getAttribute('style'), 'background: none; width: 100%; height: 100%;');
       assert.strictEqual(iframe.getAttribute('src'), url);
@@ -524,10 +524,10 @@ describe('Element', function () {
   });
 
   describe('Element.url', function () {
-    it('returns a String starting with the recurly instance API URL', function () {
-      const { element, recurly } = this;
+    it('returns a String starting with the checkout instance API URL', function () {
+      const { element, checkout } = this;
       assert.strictEqual(typeof element.url, 'string');
-      assert.strictEqual(element.url.indexOf(recurly.config.api), 0);
+      assert.strictEqual(element.url.indexOf(checkout.config.api), 0);
     });
 
     it('contains a decodable and accurate config slug', function () {

@@ -1,5 +1,5 @@
 export default function subscriptionPricing () {
-  window.recurly.Pricing.Subscription()
+  window.checkout.Pricing.Subscription()
     .plan('basic', { quantity: 1 })
     .then(x => x)
     .addon('addon1', { quantity: 2 })

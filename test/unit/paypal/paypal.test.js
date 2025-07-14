@@ -1,19 +1,19 @@
 import assert from 'assert';
-import { DirectStrategy } from '../../../lib/recurly/paypal/strategy/direct';
-import { BraintreeStrategy } from '../../../lib/recurly/paypal/strategy/braintree';
+import { DirectStrategy } from '../../../lib/checkout/paypal/strategy/direct';
+import { BraintreeStrategy } from '../../../lib/checkout/paypal/strategy/braintree';
 import {
-  initRecurly,
+  initCheckout,
   stubBraintree,
   stubWindowOpen
 } from '../support/helpers';
-import { CompleteStrategy } from '../../../lib/recurly/paypal/strategy/complete';
+import { CompleteStrategy } from '../../../lib/checkout/paypal/strategy/complete';
 
-describe('Recurly.PayPal', function () {
+describe('Checkout.PayPal', function () {
   stubWindowOpen();
 
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.paypal = this.recurly.PayPal();
+    this.checkout = initCheckout();
+    this.paypal = this.checkout.PayPal();
     this.sandbox = sinon.createSandbox();
   });
 
@@ -27,7 +27,7 @@ describe('Recurly.PayPal', function () {
     stubBraintree();
 
     beforeEach(function () {
-      this.paypal = this.recurly.PayPal(validOpts);
+      this.paypal = this.checkout.PayPal(validOpts);
     });
 
     it('uses a Braintree strategy', function () {
@@ -38,13 +38,13 @@ describe('Recurly.PayPal', function () {
       beforeEach(function () {
         window.braintree.client.create = (opt, cb) => cb({ error: 'test' });
         this.sandbox = sinon.createSandbox();
-        this.sandbox.spy(this.recurly, 'Frame');
-        this.paypal = this.recurly.PayPal(validOpts);
+        this.sandbox.spy(this.checkout, 'Frame');
+        this.paypal = this.checkout.PayPal(validOpts);
       });
 
       afterEach(function () {
         const { sandbox } = this;
-        const { Frame } = this.recurly;
+        const { Frame } = this.checkout;
         Frame.getCalls().forEach(c => c.returnValue.destroy());
         sandbox.restore();
       });
@@ -59,7 +59,7 @@ describe('Recurly.PayPal', function () {
       it('falls back to direct PayPal flow', function (done) {
         this.paypal.ready(() => {
           this.paypal.start();
-          assert(this.recurly.Frame.calledOnce);
+          assert(this.checkout.Frame.calledOnce);
           done();
         });
       });
@@ -70,7 +70,7 @@ describe('Recurly.PayPal', function () {
     const validOpts = { payPalComplete: true };
 
     beforeEach(function () {
-      this.paypal = this.recurly.PayPal(validOpts);
+      this.paypal = this.checkout.PayPal(validOpts);
     });
 
     it('uses PayPal Complete strategy', function () {

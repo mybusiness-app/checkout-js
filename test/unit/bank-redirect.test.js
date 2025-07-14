@@ -5,13 +5,13 @@ import { initCheckout, testBed } from './support/helpers';
 
 describe('Checkout.BankRedirect', function () {
   beforeEach(function (done) {
-    this.recurly = initCheckout({ });
-    this.bankRedirect = this.recurly.BankRedirect();
-    this.recurly.ready(() => done());
+    this.checkout = initCheckout({ });
+    this.bankRedirect = this.checkout.BankRedirect();
+    this.checkout.ready(() => done());
   });
 
   afterEach(function () {
-    this.recurly.destroy();
+    this.checkout.destroy();
   });
 
   describe('iDeal', function () {
@@ -143,7 +143,7 @@ describe('Checkout.BankRedirect', function () {
         };
 
         this.sandbox = sinon.createSandbox();
-        this.sandbox.spy(this.recurly, 'Frame');
+        this.sandbox.spy(this.checkout, 'Frame');
       });
 
       afterEach(function () {
@@ -283,7 +283,7 @@ describe('Checkout.BankRedirect', function () {
         };
 
         this.sandbox = sinon.createSandbox();
-        this.sandbox.spy(this.recurly, 'Frame');
+        this.sandbox.spy(this.checkout, 'Frame');
       });
 
       afterEach(function () {
@@ -330,8 +330,8 @@ function validateBankRedirectStart ({ requiredFields = [] } = {}) {
   it('creates the iframe to make the payment', function () {
     this.bankRedirect.start(this.startPayload);
 
-    assert(this.recurly.Frame.calledOnce);
-    assert(this.recurly.Frame.calledWithMatch({
+    assert(this.checkout.Frame.calledOnce);
+    assert(this.checkout.Frame.calledWithMatch({
       height: 600,
       path: '/bank_redirect/start',
       payload: this.startPayload

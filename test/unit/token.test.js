@@ -2,7 +2,7 @@ import assert from 'assert';
 import after from 'lodash.after';
 import clone from 'component-clone';
 import Promise from 'promise';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { applyFixtures } from './support/fixtures';
 import { initCheckout, testBed } from './support/helpers';
 
@@ -30,12 +30,12 @@ describe('Checkout.token', function () {
     buildCheckout();
 
     it('requires a callback', function () {
-      assert.throws(() => this.recurly.token(clone(valid)), /callback/);
+      assert.throws(() => this.checkout.token(clone(valid)), /callback/);
     });
 
     it('requires Checkout.configure', function () {
-      const recurly = new Checkout();
-      assert.throws(() => recurly.token(clone(valid), () => {}), /configure/);
+      const checkout = new Checkout();
+      assert.throws(() => checkout.token(clone(valid), () => {}), /configure/);
     });
   });
 
@@ -95,7 +95,7 @@ describe('Checkout.token', function () {
     this.ctx.fixture = 'minimal';
 
     beforeEach(function () {
-      this.recurly.config.parent = false;
+      this.checkout.config.parent = false;
     });
 
     tokenSuite(embeddedBuilder);
@@ -109,16 +109,16 @@ describe('Checkout.token', function () {
       this.ctx.fixture = 'elements';
 
       it('produces an error', function (done) {
-        const { recurly } = this;
+        const { checkout } = this;
         const form = testBed().querySelector('#test-form');
-        const container = testBed().querySelector('#recurly-elements');
-        const elements = recurly.Elements();
+        const container = testBed().querySelector('#checkout-elements');
+        const elements = checkout.Elements();
         const cardMonthElement = elements.CardMonthElement();
         const cardYearElement = elements.CardYearElement();
         cardMonthElement.attach(container);
         cardYearElement.attach(container);
 
-        recurly.token(form, (err) => {
+        checkout.token(form, (err) => {
           assert.strictEqual(err.code, 'elements-tokenization-not-possible');
           assert.deepEqual(err.found, ['CardMonthElement', 'CardYearElement']);
           done();
@@ -134,12 +134,12 @@ describe('Checkout.token', function () {
     describe('when using a HostedField', function () {
       this.ctx.fixture = () => `
         <form action="#" id="test-form">
-          <div data-recurly="cvv"></div>
-          <input type="hidden" data-recurly="token" name="recurly-token">
+          <div data-checkout="cvv"></div>
+          <input type="hidden" data-checkout="token" name="checkout-token">
         </form>
       `;
       beforeEach(function () {
-        this.recurly.hostedFields.fields[0].iframe.contentWindow.setStubTokenizationElementName('cvv');
+        this.checkout.hostedFields.fields[0].iframe.contentWindow.setStubTokenizationElementName('cvv');
       });
 
       describe('when called with a plain object', function () {
@@ -154,8 +154,8 @@ describe('Checkout.token', function () {
     describe('when called with an Elements instance', function () {
       this.ctx.fixture = () => `
         <form action="#" id="test-form">
-          <div id="recurly-elements"></div>
-          <input type="hidden" data-recurly="token" name="recurly-token">
+          <div id="checkout-elements"></div>
+          <input type="hidden" data-checkout="token" name="checkout-token">
         </form>
       `;
 
@@ -178,12 +178,12 @@ describe('Checkout.token', function () {
 
   function buildCheckout (opts) {
     beforeEach(function (done) {
-      this.recurly = initCheckout(opts);
-      this.recurly.ready(() => done());
+      this.checkout = initCheckout(opts);
+      this.checkout.ready(() => done());
     });
 
     afterEach(function () {
-      this.recurly.destroy();
+      this.checkout.destroy();
     });
   }
 
@@ -196,14 +196,14 @@ describe('Checkout.token', function () {
 
     Object.keys(example).forEach(key => {
       const val = example[key];
-      const el = form.querySelector(`[data-recurly=${key}]`);
+      const el = form.querySelector(`[data-checkout=${key}]`);
       if (el instanceof HTMLDivElement) {
         el.querySelector('iframe').contentWindow.value(val);
         delete example[key];
       }
     });
 
-    return Promise.resolve({ tokenArgs: [example], tokenBus: this.recurly.bus });
+    return Promise.resolve({ tokenArgs: [example], tokenBus: this.checkout.bus });
   }
 
   /**
@@ -214,7 +214,7 @@ describe('Checkout.token', function () {
 
     Object.keys(example).forEach(key => {
       const val = example[key];
-      const el = form.querySelector(`[data-recurly=${key}]`);
+      const el = form.querySelector(`[data-checkout=${key}]`);
       if (el instanceof HTMLDivElement) {
         el.querySelector('iframe').contentWindow.value(val);
       } else if (el && 'value' in el) {
@@ -222,7 +222,7 @@ describe('Checkout.token', function () {
       }
     });
 
-    return Promise.resolve({ tokenArgs: [form], tokenBus: this.recurly.bus });
+    return Promise.resolve({ tokenArgs: [form], tokenBus: this.checkout.bus });
   }
 
   /**
@@ -230,12 +230,12 @@ describe('Checkout.token', function () {
    */
   function elementsBuilder (example) {
     const form = window.document.querySelector('#test-form');
-    const container = form.querySelector('#recurly-elements');
-    const elements = this.elements = this.recurly.Elements();
+    const container = form.querySelector('#checkout-elements');
+    const elements = this.elements = this.checkout.Elements();
 
     return Promise.all(Object.keys(example).map(key => {
       const val = example[key];
-      let el = form.querySelector(`[data-recurly=${key}]`);
+      let el = form.querySelector(`[data-checkout=${key}]`);
 
       return new Promise((resolve) => {
         if (el && 'value' in el) {
@@ -269,7 +269,7 @@ describe('Checkout.token', function () {
    * Resolves immediately with the given example
    */
   function embeddedBuilder (example) {
-    return Promise.resolve({ tokenArgs: [example], tokenBus: this.recurly.bus });
+    return Promise.resolve({ tokenArgs: [example], tokenBus: this.checkout.bus });
   }
 
   /**
@@ -426,12 +426,12 @@ describe('Checkout.token', function () {
             });
           });
 
-          it('sets the value of a data-recurly="token" field', function (done) {
+          it('sets the value of a data-checkout="token" field', function (done) {
             this.subject((err, token) => {
               assert(!err);
               assert(token.id);
               if (example && example.nodeType === 3) {
-                assert(example.querySelector('[data-recurly=token]').value === token.id);
+                assert(example.querySelector('[data-checkout=token]').value === token.id);
               }
               done();
             });
@@ -443,9 +443,9 @@ describe('Checkout.token', function () {
     describe('when kount fraud options are enabled', function () {
       beforeEach(function (done) {
         // This test is to be performed on parents only
-        if (!this.recurly.isParent) return done();
-        this.recurly = initCheckout({
-          cors: this.recurly.config.cors,
+        if (!this.checkout.isParent) return done();
+        this.checkout = initCheckout({
+          cors: this.checkout.config.cors,
           fraud: {
             kount: {
               dataCollector: true,
@@ -454,8 +454,8 @@ describe('Checkout.token', function () {
           }
         });
         const part = after(2, () => done());
-        this.recurly.ready(part);
-        this.recurly.fraud.on('ready', part);
+        this.checkout.ready(part);
+        this.checkout.fraud.on('ready', part);
       });
 
       prepareExample(Object.assign({}, valid, {
@@ -464,7 +464,7 @@ describe('Checkout.token', function () {
 
       it('sends a fraud session id and yields a token', function (done) {
         // This test is to be performed on parents only
-        if (!this.recurly.isParent) return done();
+        if (!this.checkout.isParent) return done();
         this.subject((err, token) => {
           const spy = this.tokenBus.send.withArgs('token:init');
           assert(spy.calledOnce);
@@ -480,7 +480,7 @@ describe('Checkout.token', function () {
 
     describe('when litle fraud options are enabled', function () {
       beforeEach(function () {
-        this.recurly.configure({
+        this.checkout.configure({
           fraud: {
             litle: { sessionId: '123456' }
           }
@@ -491,7 +491,7 @@ describe('Checkout.token', function () {
 
       it('sends a fraud session id and yields a token', function (done) {
         // This test is to be performed on parents only
-        if (!this.recurly.isParent) return done();
+        if (!this.checkout.isParent) return done();
         this.subject((err, token) => {
           const spy = this.tokenBus.send.withArgs('token:init');
           assert(spy.calledOnce);
@@ -507,7 +507,7 @@ describe('Checkout.token', function () {
 
     describe('when braintree fraud options are enabled', function () {
       beforeEach(function () {
-        this.recurly.configure({
+        this.checkout.configure({
           fraud: {
             braintree: { deviceData: 'braintree-device-data' }
           }
@@ -518,7 +518,7 @@ describe('Checkout.token', function () {
 
       it('sends a fraud session id and yields a token', function (done) {
         // This test is to be performed on parents only
-        if (!this.recurly.isParent) return done();
+        if (!this.checkout.isParent) return done();
         this.subject((err, token) => {
           const spy = this.tokenBus.send.withArgs('token:init');
           assert(spy.calledOnce);
@@ -534,7 +534,7 @@ describe('Checkout.token', function () {
 
     describe('when cvv is specifically required', function () {
       beforeEach(function () {
-        this.recurly.configure({ required: ['cvv'] });
+        this.checkout.configure({ required: ['cvv'] });
       });
 
       cvvSuite(builder, valid);
@@ -648,10 +648,10 @@ describe('Checkout.token', function () {
   function tokenAllMarkupSuite (builder) {
     describe('when given additional required fields', function () {
       beforeEach(function (done) {
-        this.recurly = initCheckout({
+        this.checkout = initCheckout({
           required: ['country', 'postal_code', 'unrelated_configured_field']
         });
-        this.recurly.ready(done);
+        this.checkout.ready(done);
       });
 
       describe('when given a blank required value', function () {
@@ -718,7 +718,7 @@ describe('Checkout.token', function () {
   function prepareExample (options = {}, builder) {
     beforeEach(function (done) {
       builder.call(this, options).then(example => {
-        this.subject = cb => this.recurly.token.apply(this.recurly, example.tokenArgs.concat(cb));
+        this.subject = cb => this.checkout.token.apply(this.checkout, example.tokenArgs.concat(cb));
         this.tokenBus = example.tokenBus;
         sinon.spy(this.tokenBus, 'send');
         done();

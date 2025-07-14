@@ -5,12 +5,12 @@ const {
   getValue,
   fillElement,
   init,
-  recurlyEnvironment,
+  checkoutEnvironment,
   TOKEN_TYPES,
   tokenize
 } = require('./support/helpers');
 
-describe('Recurly.js', async function () {
+describe('Checkout.js', async function () {
   describe('credit card', async function () {
     beforeEach(init({ fixture: 'hosted-fields-card' }));
 
@@ -20,11 +20,11 @@ describe('Recurly.js', async function () {
       submit: '[data-test=submit]',
       firstName: '[data-test="first-name"]',
       lastName: '[data-test="last-name"]',
-      iframe: '.recurly-hosted-field iframe',
+      iframe: '.checkout-hosted-field iframe',
       number: 'input[placeholder="Card number"]',
       expiry: 'input[placeholder="MM / YY"]',
       cvv: 'input[placeholder="CVV"]',
-      hostedFieldInput: '.recurly-hosted-field-input'
+      hostedFieldInput: '.checkout-hosted-field-input'
     };
 
     describe('when configured with defaults', async function () {
@@ -34,7 +34,7 @@ describe('Recurly.js', async function () {
         const iframe = await $(sel.iframe);
         const url = await iframe.getAttribute('src');
 
-        assert.strictEqual(url.substring(0, url.indexOf('#')), `${recurlyEnvironment().api}/field.html`);
+        assert.strictEqual(url.substring(0, url.indexOf('#')), `${checkoutEnvironment().api}/field.html`);
       });
 
       it('creates a token', async function () {
@@ -145,7 +145,7 @@ describe('Recurly.js', async function () {
       assert.strictEqual(await getValue(sortCode), '200-000');
 
       const [err, token] = await browser.executeAsync(function (sel, done) {
-        recurly.bankAccount.token(document.querySelector(sel.form), function (err, token) {
+        checkout.bankAccount.token(document.querySelector(sel.form), function (err, token) {
           done([err, token]);
         });
       }, sel);
@@ -162,7 +162,7 @@ describe('Recurly.js', async function () {
       output: '[data-test=output]',
       form: '[data-test=form]',
       nameOnAccount: '[data-test="name-on-account"]',
-      iframe: '.recurly-hosted-field iframe',
+      iframe: '.checkout-hosted-field iframe',
       accountNumber: 'input[data-test="account-number"]',
       accountNumberConfirmation: 'input[data-test="account-number-confirmation"]',
       bsbCode: 'input[data-test="bsb-code"]',
@@ -185,7 +185,7 @@ describe('Recurly.js', async function () {
       assert.strictEqual(await getValue(bsbCode), '200000');
 
       const [err, token] = await browser.executeAsync(function (sel, done) {
-        recurly.bankAccount.token(document.querySelector(sel.form), function (err, token) {
+        checkout.bankAccount.token(document.querySelector(sel.form), function (err, token) {
           done([err, token]);
         });
       }, sel);
@@ -198,10 +198,10 @@ describe('Recurly.js', async function () {
   describe('fraud', async function () {
     beforeEach(async function () {
       await browser.url('e2e');
-      await browser.executeAsync(function (recurlyEnvironment, done) {
+      await browser.executeAsync(function (checkoutEnvironment, done) {
         const config = {
-          api: recurlyEnvironment.api,
-          publicKey: recurlyEnvironment.publicKey,
+          api: checkoutEnvironment.api,
+          publicKey: checkoutEnvironment.publicKey,
           fraud: {
             kount: {
               dataCollector: true,
@@ -209,11 +209,11 @@ describe('Recurly.js', async function () {
             }
           }
         };
-        recurly.configure(config);
-        recurly.ready(function () {
+        checkout.configure(config);
+        checkout.ready(function () {
           done();
         });
-      }, recurlyEnvironment());
+      }, checkoutEnvironment());
     });
 
     it('attaches an input with fraud session ID', async () => {
@@ -222,7 +222,7 @@ describe('Recurly.js', async function () {
 
       const scriptSrc = await script.getAttribute('src');
       const kaxsdc = await $('.kaxsdc');
-      const fraudSessionIdInput= await $('input[data-recurly="fraud_session_id"]');
+      const fraudSessionIdInput= await $('input[data-checkout="fraud_session_id"]');
       const sessionId = await fraudSessionIdInput.getValue();
 
       await assert.strictEqual(sessionId.length, 32);

@@ -14,13 +14,13 @@ const send = require('koa-send');
 
 const {
   API,
-  RECURLY_JS_URL,
+  CHECKOUT_JS_URL,
   PORT
 } = process.env;
 
 const app = module.exports = new Koa();
 const port = PORT || 9877;
-const proxyUrl = new URL(API || 'https://api.recurly.com/js/v1');
+const proxyUrl = new URL(API || 'https://mpp-api-mybusinessapp-san.azure-api.net/js/v1');
 
 // app.use(logger());
 
@@ -102,10 +102,10 @@ app.listen(port, () => {
  * Response functions
  */
 async function build (ctx, artifact) {
-  if (RECURLY_JS_URL) {
-    return await proxy(RECURLY_JS_URL, {
+  if (CHECKOUT_JS_URL) {
+    return await proxy(CHECKOUT_JS_URL, {
       proxyReqPathResolver: ctx => {
-        return RECURLY_JS_URL.replace(/\/[^\/]*$/, `/${artifact}`);
+        return CHECKOUT_JS_URL.replace(/\/[^\/]*$/, `/${artifact}`);
       }
     })(ctx);
   }
@@ -140,8 +140,8 @@ async function postMessage (ctx) {
   setHeaders(ctx);
   await ctx.render('fixtures/post-message', {
     message: {
-      recurly_event: ctx.query.event,
-      recurly_message: fixture(ctx)
+      checkout_event: ctx.query.event,
+      checkout_message: fixture(ctx)
     }
   });
 }

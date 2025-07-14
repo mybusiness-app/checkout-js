@@ -10,6 +10,6 @@ module.exports = {
     $: 'readonly',
     browser: 'readonly',
     driver: 'readonly',
-    recurly: 'readonly'
+    checkout: 'readonly'
   }
 };

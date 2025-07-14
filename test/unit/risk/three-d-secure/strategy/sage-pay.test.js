@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import SagePayStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/sage-pay';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-sage-pay.json';
+import { initCheckout, testBed } from '../../../support/helpers';
+import SagePayStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/sage-pay';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-sage-pay.json';
 
 describe('SagePayStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -10,13 +10,13 @@ describe('SagePayStrategy', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    const recurly = this.recurly = initRecurly();
-    const risk = recurly.Risk();
+    const checkout = this.checkout = initCheckout();
+    const risk = checkout.Risk();
     const threeDSecure = this.threeDSecure = risk.ThreeDSecure({ actionTokenId: 'action-token-test' });
     this.target = testBed().querySelector('#three-d-secure-container');
 
     this.sandbox = sinon.createSandbox();
-    this.sandbox.spy(recurly, 'Frame');
+    this.sandbox.spy(checkout, 'Frame');
 
     this.strategy = new SagePayStrategy({ threeDSecure, actionToken });
     this.strategy.whenReady(() => done());
@@ -30,10 +30,10 @@ describe('SagePayStrategy', function () {
 
   describe('attach', function () {
     it('creates a frame using the actionToken params', function () {
-      const { strategy, target, recurly } = this;
+      const { strategy, target, checkout } = this;
       strategy.attach(target);
-      assert(recurly.Frame.calledOnce);
-      assert(recurly.Frame.calledWithMatch({
+      assert(checkout.Frame.calledOnce);
+      assert(checkout.Frame.calledWithMatch({
         path: '/three_d_secure/start',
         payload: {
           redirect_url: 'test-sage-pay-acs-url',

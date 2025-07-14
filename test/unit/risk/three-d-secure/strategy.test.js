@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { applyFixtures } from '../../support/fixtures';
 import { testBed } from '../../support/helpers';
-import ThreeDSecureStrategy from '../../../../lib/recurly/risk/three-d-secure/strategy';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-test.json';
-import { ThreeDSecure } from '../../../../lib/recurly/risk/three-d-secure';
+import ThreeDSecureStrategy from '../../../../lib/checkout/risk/three-d-secure/strategy';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-test.json';
+import { ThreeDSecure } from '../../../../lib/checkout/risk/three-d-secure';
 
 describe('ThreeDSecureStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -37,9 +37,9 @@ describe('ThreeDSecureStrategy', function () {
         assert(container instanceof HTMLDivElement);
       });
 
-      it('has a data-recurly attribute', function () {
+      it('has a data-checkout attribute', function () {
         const { container } = this.strategy;
-        assert.strictEqual(container.getAttribute('data-recurly'), 'three-d-secure-container');
+        assert.strictEqual(container.getAttribute('data-checkout'), 'three-d-secure-container');
       });
 
       describe('dimensions', function () {

@@ -1,5 +1,5 @@
 export default function adyen () {
-  const adyen = window.recurly.Adyen();
+  const adyen = window.checkout.Adyen();
 
   // @ts-expect-error
   adyen.on('fake-event', () => {});

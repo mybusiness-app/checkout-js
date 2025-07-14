@@ -1,7 +1,7 @@
 import assert from 'assert';
 import isEqual from 'lodash.isequal';
 import { applyFixtures } from './support/fixtures';
-import { Bus } from '../../lib/recurly/bus';
+import { Bus } from '../../lib/checkout/bus';
 import Emitter from 'component-emitter';
 
 class EmitterInheritant extends Emitter {}

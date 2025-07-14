@@ -1,10 +1,10 @@
 import assert from 'assert';
-import { initRecurly } from '../../support/helpers';
+import { initCheckout } from '../../support/helpers';
 
-describe('Recurly.Pricing.Subscription', function () {
+describe('Checkout.Pricing.Subscription', function () {
   beforeEach(function () {
-    this.recurly = initRecurly();
-    this.pricing = this.recurly.Pricing.Subscription();
+    this.checkout = initCheckout();
+    this.pricing = this.checkout.Pricing.Subscription();
   });
 
   describe('with taxation', () => {

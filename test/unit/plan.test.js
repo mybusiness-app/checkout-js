@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { initCheckout } from './support/helpers';
 
 describe('Checkout.plan', function () {
@@ -7,17 +7,17 @@ describe('Checkout.plan', function () {
   const invalid = 'invalid';
 
   beforeEach(function () {
-    this.recurly = initCheckout();
+    this.checkout = initCheckout();
   });
 
   it('requires a callback', function () {
-    const { recurly } = this;
-    assert.throws(() => recurly.plan(valid), { message: 'Missing callback' });
+    const { checkout } = this;
+    assert.throws(() => checkout.plan(valid), { message: 'Missing callback' });
   });
 
   it('requires a plan code', function (done) {
-    const { recurly } = this;
-    recurly.plan(undefined, (err) => {
+    const { checkout } = this;
+    checkout.plan(undefined, (err) => {
       assert.strictEqual(err.message, 'Missing plan code');
       done();
     });
@@ -25,8 +25,8 @@ describe('Checkout.plan', function () {
 
   it('requires Checkout.configure', function () {
     try {
-      const recurly = new Checkout();
-      recurly.plan(valid, () => {});
+      const checkout = new Checkout();
+      checkout.plan(valid, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));
     }
@@ -34,8 +34,8 @@ describe('Checkout.plan', function () {
 
   describe('when given an invalid plan', function () {
     it('produces an error', function (done) {
-      const { recurly } = this;
-      recurly.plan(invalid, function (err, plan) {
+      const { checkout } = this;
+      checkout.plan(invalid, function (err, plan) {
         assert(err);
         assert(!plan);
         done();
@@ -45,8 +45,8 @@ describe('Checkout.plan', function () {
 
   describe('when given a valid plan', function () {
     it('yields a plan', function (done) {
-      const { recurly } = this;
-      recurly.plan(valid, function (err, plan) {
+      const { checkout } = this;
+      checkout.plan(valid, function (err, plan) {
         assert(!err);
         assert(plan);
         assert(plan.code === 'basic');

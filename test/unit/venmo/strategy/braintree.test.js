@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {
-  initRecurly,
+  initCheckout,
   stubBraintree,
   stubWindowOpen
 } from '../../support/helpers';
@@ -13,8 +13,8 @@ describe('BraintreeStrategy', function () {
 
   beforeEach(function (done) {
     this.sandbox = sinon.createSandbox();
-    this.recurly = initRecurly();
-    this.venmo = this.recurly.Venmo(validOpts);
+    this.checkout = initCheckout();
+    this.venmo = this.checkout.Venmo(validOpts);
     this.venmo.on('ready', done);
   });
 

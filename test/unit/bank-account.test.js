@@ -2,14 +2,14 @@ import assert from 'assert';
 import clone from 'component-clone';
 import after from 'lodash.after';
 import merge from 'lodash.merge';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { fixture } from './support/fixtures';
 import { initCheckout, testBed } from './support/helpers';
 
 describe('Checkout.bankAccount', function () {
   beforeEach(function (done) {
-    this.recurly = initCheckout();
-    this.recurly.ready(done);
+    this.checkout = initCheckout();
+    this.checkout.ready(done);
   });
 
   describe('Checkout.bankAccount.token', function () {
@@ -23,9 +23,9 @@ describe('Checkout.bankAccount', function () {
     };
 
     it('requires a callback', function () {
-      const { recurly } = this;
+      const { checkout } = this;
       try {
-        recurly.bankAccount.token(valid);
+        checkout.bankAccount.token(valid);
       } catch (e) {
         assert(~e.message.indexOf('callback'));
       }
@@ -33,8 +33,8 @@ describe('Checkout.bankAccount', function () {
 
     it('requires Checkout.configure', function () {
       try {
-        const recurly = new Checkout();
-        recurly.bankAccount.token(valid, function () {});
+        const checkout = new Checkout();
+        checkout.bankAccount.token(valid, function () {});
       } catch (e) {
         assert(~e.message.indexOf('configure'));
       }
@@ -58,8 +58,8 @@ describe('Checkout.bankAccount', function () {
         });
 
         it('produces a validation error', function (done) {
-          const { recurly } = this;
-          recurly.bankAccount.token(builder(example), (err, token) => {
+          const { checkout } = this;
+          checkout.bankAccount.token(builder(example), (err, token) => {
             assert(err.code === 'validation');
             assert(err.fields.length === 1);
             assert(err.fields[0] === 'name_on_account');
@@ -83,11 +83,11 @@ describe('Checkout.bankAccount', function () {
         ];
 
         it('yields a token', function (done) {
-          const { recurly } = this;
+          const { checkout } = this;
           const part = after(examples.length, done);
 
           examples.forEach(example => {
-            recurly.bankAccount.token(builder(example), (err, token) => {
+            checkout.bankAccount.token(builder(example), (err, token) => {
               assert(!err);
               assert(token.id);
               part();
@@ -95,16 +95,16 @@ describe('Checkout.bankAccount', function () {
           });
         });
 
-        it('sets the value of a data-recurly="token" field', function (done) {
-          const { recurly } = this;
+        it('sets the value of a data-checkout="token" field', function (done) {
+          const { checkout } = this;
           const part = after(examples.length, done);
 
           examples.forEach(example => {
-            recurly.bankAccount.token(builder(example), (err, token) => {
+            checkout.bankAccount.token(builder(example), (err, token) => {
               assert(!err);
               assert(token.id);
               if (example && example.nodeType === 3) {
-                assert(example.querySelector('[data-recurly=token]').value === token.id);
+                assert(example.querySelector('[data-checkout=token]').value === token.id);
               }
               part();
             });
@@ -120,8 +120,8 @@ describe('Checkout.bankAccount', function () {
         };
 
         it('yields a token', function (done) {
-          const { recurly } = this;
-          recurly.bankAccount.token(validIban, (err, token) => {
+          const { checkout } = this;
+          checkout.bankAccount.token(validIban, (err, token) => {
             assert(!err);
             assert(token.id);
             done();
@@ -138,8 +138,8 @@ describe('Checkout.bankAccount', function () {
           };
 
           it('yields a token', function (done) {
-            const { recurly } = this;
-            recurly.bankAccount.token(validBacs, (err, token) => {
+            const { checkout } = this;
+            checkout.bankAccount.token(validBacs, (err, token) => {
               assert(!err);
               assert(token.id);
               done();
@@ -159,8 +159,8 @@ describe('Checkout.bankAccount', function () {
         };
 
         it('yields a token', function (done) {
-          const { recurly } = this;
-          recurly.bankAccount.token(validBecs, (err, token) => {
+          const { checkout } = this;
+          checkout.bankAccount.token(validBecs, (err, token) => {
             assert(!err);
             assert(token.id);
             done();
@@ -173,7 +173,7 @@ describe('Checkout.bankAccount', function () {
   describe('Checkout.bankAccount.bankInfo', function () {
     context('Bacs Bank Account', function () {
       it('requires a account_number_confirmation', function (done) {
-        const { recurly } = this;
+        const { checkout } = this;
 
         const invalidBacs = {
           account_number: '55779911',
@@ -182,7 +182,7 @@ describe('Checkout.bankAccount', function () {
           type: 'bacs',
         };
 
-        recurly.bankAccount.token(invalidBacs, (err) => {
+        checkout.bankAccount.token(invalidBacs, (err) => {
           assert(err);
           assert(~err.message.indexOf('validating'));
           done();
@@ -196,17 +196,17 @@ describe('Checkout.bankAccount', function () {
       };
 
       it('requires a callback', function () {
-        const { recurly } = this;
+        const { checkout } = this;
         try {
-          recurly.bankAccount.bankInfo(valid);
+          checkout.bankAccount.bankInfo(valid);
         } catch (e) {
           assert(~e.message.indexOf('callback'));
         }
       });
 
       it('requires a routingNumber', function () {
-        const { recurly } = this;
-        recurly.bankAccount.bankInfo({}, (err, bankInfo) => {
+        const { checkout } = this;
+        checkout.bankAccount.bankInfo({}, (err, bankInfo) => {
           assert.strictEqual(err.code, 'validation');
           assert.strictEqual(err.fields.length, 1);
           assert.strictEqual(err.fields[0], 'routing_number');
@@ -217,8 +217,8 @@ describe('Checkout.bankAccount', function () {
 
     describe('when given a routingNumber', function () {
       it('responds with bank info', function () {
-        const { recurly } = this;
-        recurly.bankAccount.bankInfo({ routingNumber: 'test-routing-number' }, (err, bankInfo) => {
+        const { checkout } = this;
+        checkout.bankAccount.bankInfo({ routingNumber: 'test-routing-number' }, (err, bankInfo) => {
           assert.deepEqual(bankInfo, { bank_name: 'test-bank-name' });
           assert(!err);
         });

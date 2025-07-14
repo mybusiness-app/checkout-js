@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import StripeStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/stripe';
-import actionTokenPaymentIntent from '@recurly/public-api-test-server/fixtures/tokens/action-token-stripe-pi.json';
-import actionTokenSetupIntent from '@recurly/public-api-test-server/fixtures/tokens/action-token-stripe-seti.json';
+import { initCheckout, testBed } from '../../../support/helpers';
+import StripeStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/stripe';
+import actionTokenPaymentIntent from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-stripe-pi.json';
+import actionTokenSetupIntent from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-stripe-seti.json';
 
 describe('StripeStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -11,8 +11,8 @@ describe('StripeStrategy', function () {
   applyFixtures();
 
   beforeEach(function () {
-    const recurly = this.recurly = initRecurly();
-    const risk = recurly.Risk();
+    const checkout = this.checkout = initCheckout();
+    const risk = checkout.Risk();
 
     this.threeDSecure = risk.ThreeDSecure({ actionTokenId: 'action-token-test' });
     this.target = testBed().querySelector('#three-d-secure-container');

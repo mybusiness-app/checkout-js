@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { applyFixtures } from '../../../support/fixtures';
-import { initRecurly, testBed } from '../../../support/helpers';
-import TestStrategy from '../../../../../lib/recurly/risk/three-d-secure/strategy/test';
-import actionToken from '@recurly/public-api-test-server/fixtures/tokens/action-token-test.json';
-import { Frame } from '../../../../../lib/recurly/frame';
-import { ThreeDSecure } from '../../../../../lib/recurly/risk/three-d-secure';
+import { initCheckout, testBed } from '../../../support/helpers';
+import TestStrategy from '../../../../../lib/checkout/risk/three-d-secure/strategy/test';
+import actionToken from '@mybusinessapp/public-api-test-server/fixtures/tokens/action-token-test.json';
+import { Frame } from '../../../../../lib/checkout/frame';
+import { ThreeDSecure } from '../../../../../lib/checkout/risk/three-d-secure';
 
 describe('TestStrategy', function () {
   this.ctx.fixture = 'threeDSecure';
@@ -12,9 +12,9 @@ describe('TestStrategy', function () {
   applyFixtures();
 
   beforeEach(function () {
-    const recurly = this.recurly = initRecurly();
+    const checkout = this.checkout = initCheckout();
     const challengeWindowSize = ThreeDSecure.CHALLENGE_WINDOW_SIZE_03_500_X_600;
-    const threeDSecure = this.threeDSecureStub = { risk: { recurly }, error: sinon.stub(), challengeWindowSize };
+    const threeDSecure = this.threeDSecureStub = { risk: { checkout }, error: sinon.stub(), challengeWindowSize };
     this.strategy = new TestStrategy({ threeDSecure, actionToken });
     this.target = testBed().querySelector('#three-d-secure-container');
     this.sandbox = sinon.createSandbox();
@@ -27,15 +27,15 @@ describe('TestStrategy', function () {
   describe('attach', function () {
     describe('when the actionToken requires a challenge', function () {
       beforeEach(function () {
-        const { sandbox, recurly } = this;
-        sandbox.spy(recurly, 'Frame');
+        const { sandbox, checkout } = this;
+        sandbox.spy(checkout, 'Frame');
       });
 
       it('presents a challenge dialogue in a frame', function (done) {
-        const { strategy, target, recurly } = this;
+        const { strategy, target, checkout } = this;
         strategy.on('done', result => {
-          assert(recurly.Frame.calledOnce);
-          assert(recurly.Frame.calledWithMatch({
+          assert(checkout.Frame.calledOnce);
+          assert(checkout.Frame.calledWithMatch({
             type: Frame.TYPES.IFRAME,
             path: '/three_d_secure/mock',
             payload: {

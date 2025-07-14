@@ -63,7 +63,7 @@ const config = exports.config = Object.assign({}, defaultConfig, {
     if (isMobile()) {
       process.env.API_PROXY = 'http://bs-local.com:9877/api-proxy';
     }
-    require('@recurly/public-api-test-server');
+    require('@mybusinessapp/public-api-test-server');
   }
 });
 

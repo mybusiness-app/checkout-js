@@ -1,25 +1,25 @@
 export default function paypal () {
-  const paypal = window.recurly.PayPal();
+  const paypal = window.checkout.PayPal();
 
-  window.recurly.PayPal({
+  window.checkout.PayPal({
     display: {
       displayName: 'display-name'
     }
   });
 
-  window.recurly.PayPal({
+  window.checkout.PayPal({
     braintree: {
       clientAuthorization: 'client-authorization'
     }
   });
 
-  window.recurly.PayPal({
+  window.checkout.PayPal({
     gatewayCode: 'gateway-code',
     payPalComplete: true,
   });
 
   // @ts-expect-error
-  window.recurly.PayPal('string');
+  window.checkout.PayPal('string');
 
   paypal.on('token', () => {});
   paypal.on('error', () => {});

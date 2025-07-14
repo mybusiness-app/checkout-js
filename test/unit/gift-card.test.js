@@ -1,32 +1,32 @@
 import assert from 'assert';
-import { Checkout } from '../../lib/recurly';
+import { Checkout } from '../../lib/checkout';
 import { initCheckout } from './support/helpers';
 
 describe('Checkout.giftCard', function () {
   const valid = { code: 'super-gift-card' };
   const invalid = { code: 'invalid' };
-  let recurly;
+  let checkout;
 
   beforeEach(function () {
-    recurly = initCheckout();
+    checkout = initCheckout();
   });
 
   it('requires a callback', function () {
-    assert.throws(() => recurly.giftCard(valid), { message: 'Missing callback' });
+    assert.throws(() => checkout.giftCard(valid), { message: 'Missing callback' });
   });
 
   it('requires options', function () {
-    assert.throws(() => recurly.giftCard(null, () => {}), { message: 'Options must be an object' });
+    assert.throws(() => checkout.giftCard(null, () => {}), { message: 'Options must be an object' });
   });
 
   it('requires options.code', function () {
-    assert.throws(() => recurly.giftCard({ arbitrary: 'values' }, () => {}), { message: 'Option code must be a String' });
+    assert.throws(() => checkout.giftCard({ arbitrary: 'values' }, () => {}), { message: 'Option code must be a String' });
   });
 
   it('requires Checkout.configure', function () {
     try {
-      recurly = new Checkout();
-      recurly.giftCard(valid, () => {});
+      checkout = new Checkout();
+      checkout.giftCard(valid, () => {});
     } catch (e) {
       assert(~e.message.indexOf('configure'));
     }
@@ -34,7 +34,7 @@ describe('Checkout.giftCard', function () {
 
   describe('when given an invalid code', function () {
     it('produces an error', function (done) {
-      recurly.giftCard(invalid, function (err, giftCard) {
+      checkout.giftCard(invalid, function (err, giftCard) {
         assert(err);
         assert(!giftCard);
         done();
@@ -44,7 +44,7 @@ describe('Checkout.giftCard', function () {
 
   describe('when given a valid code', function () {
     it('contains a discount amount', function (done) {
-      recurly.giftCard(valid, (err, giftCard) => {
+      checkout.giftCard(valid, (err, giftCard) => {
         const { unit_amount, currency } = giftCard;
         assert.strictEqual(unit_amount, 20);
         assert.strictEqual(currency, 'USD');
@@ -54,8 +54,8 @@ describe('Checkout.giftCard', function () {
   });
 
   describe('deprecated behavior', function () {
-    it('may be called at recurly.giftcard', function (done) {
-      recurly.giftcard(valid, (err, giftCard) => {
+    it('may be called at checkout.giftcard', function (done) {
+      checkout.giftcard(valid, (err, giftCard) => {
         assert(!err);
         assert(giftCard);
         done();
@@ -63,7 +63,7 @@ describe('Checkout.giftCard', function () {
     });
 
     it('accepts options.code as options.giftcard', function (done) {
-      recurly.giftCard({ giftcard: valid.code }, (err, giftCard) => {
+      checkout.giftCard({ giftcard: valid.code }, (err, giftCard) => {
         assert(!err);
         assert(giftCard);
         done();

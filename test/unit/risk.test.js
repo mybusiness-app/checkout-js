@@ -1,15 +1,15 @@
 import assert from 'assert';
 import Promise from 'promise';
-import errors from '../../lib/recurly/errors';
+import errors from '../../lib/checkout/errors';
 import { initCheckout } from './support/helpers';
-import { factory, Risk } from '../../lib/recurly/risk';
-import RiskConcern from '../../lib/recurly/risk/risk-concern';
-import { ThreeDSecure } from '../../lib/recurly/risk/three-d-secure/three-d-secure';
+import { factory, Risk } from '../../lib/checkout/risk';
+import RiskConcern from '../../lib/checkout/risk/risk-concern';
+import { ThreeDSecure } from '../../lib/checkout/risk/three-d-secure/three-d-secure';
 
 describe('Risk', function () {
   beforeEach(function () {
-    this.recurly = initCheckout();
-    this.risk = this.recurly.Risk();
+    this.checkout = initCheckout();
+    this.risk = this.checkout.Risk();
     this.sandbox = sinon.createSandbox();
   });
 
@@ -25,7 +25,7 @@ describe('Risk', function () {
     it('sets its Checkout reference from the calling context', function () {
       const stub = {};
       const risk = factory.call(stub);
-      assert.strictEqual(risk.recurly, stub);
+      assert.strictEqual(risk.checkout, stub);
     });
   });
 
@@ -68,18 +68,18 @@ describe('Risk', function () {
     beforeEach(function () {
       const { sandbox } = this;
       this.bin = '411111';
-      this.recurly = initCheckout({ publicKey: 'test-preflight-key' });
+      this.checkout = initCheckout({ publicKey: 'test-preflight-key' });
       this.stubPreflightResults = { risk: [{ arbitrary: 'results' }], tokenType: undefined };
       sandbox.stub(ThreeDSecure, 'preflight').usingPromise(Promise).resolves(this.stubPreflightResults);
     });
 
     it('retrieves preflight parameters from the API and resolves with results', function (done) {
-      const { recurly, sandbox, bin, stubPreflightResults } = this;
-      sandbox.spy(recurly.request, 'get');
-      Risk.preflight({ recurly, bin })
+      const { checkout, sandbox, bin, stubPreflightResults } = this;
+      sandbox.spy(checkout.request, 'get');
+      Risk.preflight({ checkout, bin })
         .done(results => {
-          assert(recurly.request.get.calledOnce);
-          assert(recurly.request.get.calledWithMatch({ route: '/risk/preflights' }));
+          assert(checkout.request.get.calledOnce);
+          assert(checkout.request.get.calledWithMatch({ route: '/risk/preflights' }));
           assert.deepStrictEqual(results, stubPreflightResults);
           done();
         });
@@ -97,8 +97,8 @@ describe('Risk', function () {
       });
 
       it('filters out those timeout results', function (done) {
-        const { recurly, bin, stubPreflightResults } = this;
-        Risk.preflight({ recurly, bin })
+        const { checkout, bin, stubPreflightResults } = this;
+        Risk.preflight({ checkout, bin })
           .done(results => {
             assert.strictEqual(results.risk.length, 2);
             assert.deepStrictEqual(results.risk[0], stubPreflightResults.risk[0]);

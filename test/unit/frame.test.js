@@ -1,7 +1,7 @@
 import { applyFixtures } from './support/fixtures';
 import assert from 'assert';
 import { initCheckout, stubWindowOpen, testBed } from './support/helpers';
-import { Frame } from '../../lib/recurly/frame';
+import { Frame } from '../../lib/checkout/frame';
 
 describe('Checkout.Frame', function () {
   const path = '/frame_mock';
@@ -13,16 +13,16 @@ describe('Checkout.Frame', function () {
   applyFixtures();
 
   beforeEach(function (done) {
-    this.recurly = initCheckout();
+    this.checkout = initCheckout();
     this.sandbox = sinon.createSandbox();
 
     this.sandbox.stub(window.document.body, 'appendChild').callsFake(function (maybeRelay) {
-      if (~(maybeRelay.name || '').indexOf('recurly-relay-')) maybeRelay.onload();
+      if (~(maybeRelay.name || '').indexOf('checkout-relay-')) maybeRelay.onload();
       else this.appendChild.wrappedMethod.call(this, maybeRelay);
     });
 
-    this.recurly.ready(() => {
-      this.frame = this.recurly.Frame({ path });
+    this.checkout.ready(() => {
+      this.frame = this.checkout.Frame({ path });
       done();
     });
   });
@@ -38,12 +38,12 @@ describe('Checkout.Frame', function () {
   });
 
   it('sends Checkout.version in the url', function () {
-    const { recurly } = this;
-    assert(window.open.calledWithMatch(`version=${recurly.version}`));
+    const { checkout } = this;
+    assert(window.open.calledWithMatch(`version=${checkout.version}`));
   });
 
   it('sends a listener event name to the opened url', function () {
-    assert(window.open.calledWithMatch(/recurly-frame-\w+-\w+/));
+    assert(window.open.calledWithMatch(/checkout-frame-\w+-\w+/));
   });
 
   it('listens for the frame event', function () {
@@ -58,11 +58,11 @@ describe('Checkout.Frame', function () {
       'bfjbkdfs'
     ];
 
-    it('opens the url relative to recurly.config.api', function () {
-      const { recurly } = this;
+    it('opens the url relative to checkout.config.api', function () {
+      const { checkout } = this;
       examples.forEach(path => {
-        const frame = recurly.Frame({ path });
-        assert(window.open.calledWithMatch(recurly.config.api + path));
+        const frame = checkout.Frame({ path });
+        assert(window.open.calledWithMatch(checkout.config.api + path));
         frame.destroy();
       });
     });
@@ -70,12 +70,12 @@ describe('Checkout.Frame', function () {
 
   describe('when given data', function () {
     it('encodes the data into the opener url', function () {
-      this.frame = this.recurly.Frame({ path, payload });
+      this.frame = this.checkout.Frame({ path, payload });
       assert(window.open.calledWithMatch('example=data'));
     });
 
     it('produces a valid composite querystring of given and additional data', function () {
-      this.frame = this.recurly.Frame({ path, payload });
+      this.frame = this.checkout.Frame({ path, payload });
       assert(window.open.calledWithMatch(function (url) {
         return (url.match(/\?/) || []).length;
       }));
@@ -84,7 +84,7 @@ describe('Checkout.Frame', function () {
 
   describe('when given a default event name', function () {
     it('listens for the default event name', function () {
-      this.frame = this.recurly.Frame({
+      this.frame = this.checkout.Frame({
         path,
         payload,
         defaultEventName: 'testing-frame'
@@ -98,7 +98,7 @@ describe('Checkout.Frame', function () {
       document.documentMode = 'test';
 
       // rerun this to account for IE mocking
-      this.frame = this.recurly.Frame({ path });
+      this.frame = this.checkout.Frame({ path });
     });
 
     afterEach(function () {
@@ -114,7 +114,7 @@ describe('Checkout.Frame', function () {
       assert.strictEqual(relay.width, '0');
       assert.strictEqual(relay.height, '0');
       assert.strictEqual(!!~relay.src.indexOf('/api/relay'), true);
-      assert.strictEqual(relay.name, `recurly-relay-${frame.id}`);
+      assert.strictEqual(relay.name, `checkout-relay-${frame.id}`);
       assert.strictEqual(relay.style.display, 'none');
       assert(relay.onload instanceof Function);
       assert(frame.create.notCalled);
@@ -124,11 +124,11 @@ describe('Checkout.Frame', function () {
 
     describe('destroy', function () {
       it('removes the relay', function () {
-        const { sandbox, recurly } = this;
+        const { sandbox, checkout } = this;
         const { body } = window.document;
         sandbox.stub(body, 'contains').returns(true);
         sandbox.stub(body, 'removeChild').returns(true);
-        const frame = this.frame = recurly.Frame({ path });
+        const frame = this.frame = checkout.Frame({ path });
         frame.destroy();
         assert(body.removeChild.calledOnce);
         assert(body.removeChild.calledWithExactly(frame.relay));
@@ -138,8 +138,8 @@ describe('Checkout.Frame', function () {
 
   describe('destroy', function () {
     it('closes the window', function () {
-      const { recurly, newWindow } = this;
-      const frame = recurly.Frame({ path, payload });
+      const { checkout, newWindow } = this;
+      const frame = checkout.Frame({ path, payload });
       assert(newWindow.close.notCalled);
       frame.destroy();
       assert(newWindow.close.calledOnce);
@@ -154,9 +154,9 @@ describe('Checkout.Frame', function () {
 
   describe('when type=iframe', function () {
     it('requires a container', function () {
-      const { recurly } = this;
+      const { checkout } = this;
       assert.throws(() => {
-        this.frame = recurly.Frame({ path, payload, type: Frame.TYPES.IFRAME });
+        this.frame = checkout.Frame({ path, payload, type: Frame.TYPES.IFRAME });
       }, {
         message: 'Invalid container. Expected HTMLElement, got undefined'
       });
@@ -164,8 +164,8 @@ describe('Checkout.Frame', function () {
 
     describe('when given a container', function () {
       beforeEach(function (done) {
-        const { recurly } = this;
-        this.frame = recurly.Frame({ path, payload, type: Frame.TYPES.IFRAME, container: testBed() });
+        const { checkout } = this;
+        this.frame = checkout.Frame({ path, payload, type: Frame.TYPES.IFRAME, container: testBed() });
         this.frame.on('done', () => done());
       });
 
@@ -174,26 +174,26 @@ describe('Checkout.Frame', function () {
       });
 
       it('sets the url appropriately', function () {
-        const { recurly } = this;
+        const { checkout } = this;
         const { src } = this.frame.iframe;
         assert(~src.indexOf('/frame_mock'));
         assert(~src.indexOf('example=data'));
-        assert(~src.indexOf(`version=${recurly.version}`));
-        assert(~src.indexOf('event=recurly-frame-'));
+        assert(~src.indexOf(`version=${checkout.version}`));
+        assert(~src.indexOf('event=checkout-frame-'));
         assert(~src.indexOf('key=test'));
         assert(!~src.indexOf('credentialCheckoutHostname'));
       });
 
       describe('when configured to use hostname auth', function () {
         beforeEach(function (done) {
-          this.recurly.configure({ hostname: 'test-hostname.recurly.com' });
-          this.frame = this.recurly.Frame({ path, payload, type: Frame.TYPES.IFRAME, container: testBed() });
+          this.checkout.configure({ hostname: 'test-hostname.mybusinessapp.co.za' });
+          this.frame = this.checkout.Frame({ path, payload, type: Frame.TYPES.IFRAME, container: testBed() });
           this.frame.on('done', () => done());
         });
 
         it('assigns the value in the URL', function () {
           const { src } = this.frame.iframe;
-          assert(~src.indexOf('credentialCheckoutHostname=test-hostname.recurly.com'));
+          assert(~src.indexOf('credentialCheckoutHostname=test-hostname.mybusinessapp.co.za'));
         });
       });
 
@@ -211,7 +211,7 @@ describe('Checkout.Frame', function () {
   it('emits a closed event when the frame closes', function (done) {
     this.newWindow = { close: () => this.newWindow.closed = true, closed: false };
     this.timeout(2000); // timeout with error if frame doesn't emit close event
-    const frame = this.recurly.Frame({ path }).on('close', () => done());
+    const frame = this.checkout.Frame({ path }).on('close', () => done());
     frame.window.close();
   });
 });

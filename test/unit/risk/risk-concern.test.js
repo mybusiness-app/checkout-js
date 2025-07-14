@@ -1,11 +1,11 @@
 import assert from 'assert';
-import { initRecurly } from '../support/helpers';
-import RiskConcern from '../../../lib/recurly/risk/risk-concern';
+import { initCheckout } from '../support/helpers';
+import RiskConcern from '../../../lib/checkout/risk/risk-concern';
 
 describe('RiskConcern', function () {
   beforeEach(function () {
-    const recurly = initRecurly();
-    this.riskStub = { add: sinon.stub(), remove: sinon.stub(), recurly };
+    const checkout = initCheckout();
+    this.riskStub = { add: sinon.stub(), remove: sinon.stub(), checkout };
     this.riskConcern = new RiskConcern({ risk: this.riskStub });
   });
 
@@ -15,10 +15,10 @@ describe('RiskConcern', function () {
     assert(riskStub.add.calledWithExactly(riskConcern));
   });
 
-  describe('recurly', function () {
-    it('references the risk recurly instance', function () {
+  describe('checkout', function () {
+    it('references the risk checkout instance', function () {
       const { riskConcern, riskStub } = this;
-      assert.strictEqual(riskConcern.recurly, riskStub.recurly);
+      assert.strictEqual(riskConcern.checkout, riskStub.checkout);
     });
   });
 
@@ -36,10 +36,10 @@ describe('RiskConcern', function () {
   describe('report', function () {
     it('includes its id, namespace, and call-time metadata', function () {
       const { riskConcern } = this;
-      riskConcern.risk.recurly.reporter.send.reset();
+      riskConcern.risk.checkout.reporter.send.reset();
       riskConcern.report('test-error', { test: 'metadata' });
-      assert(riskConcern.risk.recurly.reporter.send.calledOnce);
-      assert(riskConcern.risk.recurly.reporter.send.calledWithMatch(
+      assert(riskConcern.risk.checkout.reporter.send.calledOnce);
+      assert(riskConcern.risk.checkout.reporter.send.calledWithMatch(
         'base:test-error',
         { concernId: riskConcern.id, test: 'metadata' }
       ));

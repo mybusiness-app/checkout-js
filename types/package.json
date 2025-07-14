@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@types/mybusinessapp__checkout-js",
-    "version": "1.0.0",
+    "version": "3.47.1",
     "nonNpm": true,
     "nonNpmDescription": "@mybusinessapp/checkout-js",
     "projects": [

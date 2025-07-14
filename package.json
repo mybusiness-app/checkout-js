@@ -1,7 +1,7 @@
 {
   "name": "checkout.js",
   "description": "Simple subscription billing in the browser",
-  "version": "3.47.1",
+  "version": "4.37.1",
   "license": "MIT",
   "main": "checkout.js",
   "repository": {

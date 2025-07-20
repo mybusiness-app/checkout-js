@@ -5,8 +5,8 @@
 </p>
 
 [![build status][github-actions-ci-image]][github-actions-ci-url]
-<!-- [![Browser test status][browserstack-image]][browserstack-url] -->
 [![coverage][coverage-image]][coverage-url]
+<!-- [![Browser test status][browserstack-image]][browserstack-url] -->
 
 ## Documentation
 

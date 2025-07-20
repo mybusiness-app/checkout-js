@@ -167,9 +167,7 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
       - name: Clean up tests
-        run: |
-          rm -rf build/reports
-          rm -f test-unit.js
+        run: rm -rf build/reports && rm -f test-unit.js
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{secrets.GCR_QA_PUBLIC_DEVOPS_SA}}

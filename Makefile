@@ -40,6 +40,8 @@ test-unit-ci: build build/test-unit.js
 	@$(karma) karma.ci.conf.js
 test-unit-cov-ci: export REPORT_COVERAGE = true
 test-unit-cov-ci: test-unit-ci
+	# @cat ./build/reports/coverage/lcov.info | $(coveralls)
+	@rm -rf ./build/reports
 test-e2e: build $(src) $(tests)
 	@$(wdio) wdio.conf.js
 test-e2e-debug: build $(src) $(tests)

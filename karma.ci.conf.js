@@ -6,7 +6,7 @@ const {
 } = require('./test/conf/browserstack');
 
 const {
-  BROWSER = 'Chrome',
+  BROWSER = 'ChromeHeadlessCI',
   REPORT_COVERAGE = false,
   GITHUB_RUN_ID
 } = process.env;

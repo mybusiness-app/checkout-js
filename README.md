@@ -4,7 +4,7 @@
   <img src="https://i.imgur.com/768rLjE.gif">
 </p>
 
-[![build status][travis-image]][travis-url]
+[![Continuous Integration][github-actions-ci-image]][github-actions-ci-url]
 [![Browser test status][browserstack-image]][browserstack-url]
 [![coverage][coverage-image]][coverage-url]
 
@@ -53,8 +53,8 @@ To run a single test or test group, use mocha's `.only` syntax.
 [coverage-image]: https://img.shields.io/coveralls/github/mybusinessapp/checkout-js.svg?style=flat-square
 [browserstack-url]: https://automate.browserstack.com/public-build/MDJrZjliTlUvTjkzVGFzZ2ZpT1FHZ011aS9RUS9QQXE2ZlBZNUZJWWRGND0tLUcwbzUxYUF3QUt6dnM5aHJBb0lWNWc9PQ==--e8dfaeba4b9697fa5fc4ee5e245d44e5d9ad9d99%
 [browserstack-image]: https://automate.browserstack.com/badge.svg?badge_key=MDJrZjliTlUvTjkzVGFzZ2ZpT1FHZ011aS9RUS9QQXE2ZlBZNUZJWWRGND0tLUcwbzUxYUF3QUt6dnM5aHJBb0lWNWc9PQ==--e8dfaeba4b9697fa5fc4ee5e245d44e5d9ad9d99%
-[travis-url]: https://travis-ci.com/mybusinessapp/checkout-js/builds
-[travis-image]: https://img.shields.io/travis/com/mybusinessapp/checkout-js/master.svg?style=flat-square
+[github-actions-ci-image]: https://github.com/mybusiness-app/checkout-js/actions/workflows/ci.yaml/badge.svg
+[github-actions-ci-url]: https://github.com/mybusiness-app/checkout-js/actions/workflows/ci.yaml
 
 [docs]: https://developers.mybusinessapp.co.za/pages/checkout-js.html
 [examples]: https://github.com/mybusinessapp/checkout-js-examples

@@ -2,7 +2,7 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - interval
+      - internal
   pull_request:
 
 concurrency:

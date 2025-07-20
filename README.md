@@ -4,8 +4,8 @@
   <img src="https://i.imgur.com/768rLjE.gif">
 </p>
 
-[![Continuous Integration][github-actions-ci-image]][github-actions-ci-url]
-[![Browser test status][browserstack-image]][browserstack-url]
+[![build status][github-actions-ci-image]][github-actions-ci-url]
+<!-- [![Browser test status][browserstack-image]][browserstack-url] -->
 [![coverage][coverage-image]][coverage-url]
 
 ## Documentation
@@ -49,8 +49,8 @@ To run a single test or test group, use mocha's `.only` syntax.
 
 [climate-url]: https://codeclimate.com/github/mybusinessapp/checkout-js
 [climate-image]: http://img.shields.io/codeclimate/github/mybusinessapp/checkout-js.svg?style=flat-square
-[coverage-url]: https://coveralls.io/github/mybusinessapp/checkout-js
-[coverage-image]: https://img.shields.io/coveralls/github/mybusinessapp/checkout-js.svg?style=flat-square
+[coverage-url]: https://codecov.io/gh/mybusiness-app/checkout-js
+[coverage-image]: https://codecov.io/gh/mybusiness-app/checkout-js/branch/internal/graph/badge.svg?token=M46FYFQ0K7
 [browserstack-url]: https://automate.browserstack.com/public-build/MDJrZjliTlUvTjkzVGFzZ2ZpT1FHZ011aS9RUS9QQXE2ZlBZNUZJWWRGND0tLUcwbzUxYUF3QUt6dnM5aHJBb0lWNWc9PQ==--e8dfaeba4b9697fa5fc4ee5e245d44e5d9ad9d99%
 [browserstack-image]: https://automate.browserstack.com/badge.svg?badge_key=MDJrZjliTlUvTjkzVGFzZ2ZpT1FHZ011aS9RUS9QQXE2ZlBZNUZJWWRGND0tLUcwbzUxYUF3QUt6dnM5aHJBb0lWNWc9PQ==--e8dfaeba4b9697fa5fc4ee5e245d44e5d9ad9d99%
 [github-actions-ci-image]: https://github.com/mybusiness-app/checkout-js/actions/workflows/ci.yaml/badge.svg

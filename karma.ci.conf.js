@@ -13,11 +13,18 @@ const {
 
 const BROWSER_STACK_CAPABILITY = browserStackCapabilities[BROWSER];
 
+let browsers = [];
+if (BROWSER === 'Chrome') {
+  browsers = ['ChromeHeadless'];
+} else {
+  browsers = [BROWSER];
+}
+
 function runner (config) {
   const cfg = Object.assign({}, staticConfig, {
     reporters: ['mocha'],
     logLevel: config.LOG_INFO,
-    browsers: [BROWSER],
+    browsers: browsers,
     customLaunchers: customLaunchers(),
     hostname: hostname()
   });

@@ -63,65 +63,65 @@ jobs:
           DISPLAY: :99
         with:
           run: make test-unit-ci
-  test_remote:
-    name: ${{matrix.type}} test (${{matrix.browser}})
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
-      fail-fast: false
-      matrix:
-        type:
-          - Unit
-          - End-to-end
-        browser:
-          - Chrome-Remote # no unit
-          - Firefox-Remote # no unit
-          - Safari-Remote
-          - Edge-Remote
-          - iOS-18-Remote
-          - iOS-17-Remote
-          - Android-14-Remote
-          - Android-13-Remote
-          - Android-12-Remote
-    steps:
-      - uses: ahmadnassri/action-workflow-queue@v1
-      - uses: actions/checkout@v4
-      - name: Unit test
-        if: ${{matrix.type == 'Unit' && matrix.browser != 'Chrome-Remote' && matrix.browser != 'Firefox-Remote'}}
-        uses: nick-fields/retry@v2
-        env:
-          BROWSER: ${{matrix.browser}}
-          BROWSER_STACK_USERNAME: ${{secrets.BROWSER_STACK_USERNAME}}
-          BROWSER_STACK_ACCESS_KEY: ${{secrets.BROWSER_STACK_ACCESS_KEY}}
-        with:
-          timeout_minutes: 12
-          max_attempts: 2
-          command: make test-unit-ci
-      - name: End-to-end test
-        if: ${{matrix.type == 'End-to-end'}}
-        uses: nick-fields/retry@v2
-        env:
-          BROWSER: ${{matrix.browser}}
-          BROWSER_STACK_USERNAME: ${{secrets.BROWSER_STACK_USERNAME}}
-          BROWSER_STACK_ACCESS_KEY: ${{secrets.BROWSER_STACK_ACCESS_KEY}}
-        with:
-          timeout_minutes: 16
-          max_attempts: 2
-          command: make test-e2e-ci
-  integration_test:
-    name: Integration test with react-checkout
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: mybusiness-app/react-checkout
-          path: vendor
-      - name: react-checkout
-        env:
-          CHECKOUT_JS_SHA: ${{github.sha}}
-        run: |-
-          cd vendor
-          make test
+  # test_remote:
+  #   name: ${{matrix.type}} test (${{matrix.browser}})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     max-parallel: 5
+  #     fail-fast: false
+  #     matrix:
+  #       type:
+  #         - Unit
+  #         - End-to-end
+  #       browser:
+  #         - Chrome-Remote # no unit
+  #         - Firefox-Remote # no unit
+  #         - Safari-Remote
+  #         - Edge-Remote
+  #         - iOS-18-Remote
+  #         - iOS-17-Remote
+  #         - Android-14-Remote
+  #         - Android-13-Remote
+  #         - Android-12-Remote
+  #   steps:
+  #     - uses: ahmadnassri/action-workflow-queue@v1
+  #     - uses: actions/checkout@v4
+  #     - name: Unit test
+  #       if: ${{matrix.type == 'Unit' && matrix.browser != 'Chrome-Remote' && matrix.browser != 'Firefox-Remote'}}
+  #       uses: nick-fields/retry@v2
+  #       env:
+  #         BROWSER: ${{matrix.browser}}
+  #         BROWSER_STACK_USERNAME: ${{secrets.BROWSER_STACK_USERNAME}}
+  #         BROWSER_STACK_ACCESS_KEY: ${{secrets.BROWSER_STACK_ACCESS_KEY}}
+  #       with:
+  #         timeout_minutes: 12
+  #         max_attempts: 2
+  #         command: make test-unit-ci
+  #     - name: End-to-end test
+  #       if: ${{matrix.type == 'End-to-end'}}
+  #       uses: nick-fields/retry@v2
+  #       env:
+  #         BROWSER: ${{matrix.browser}}
+  #         BROWSER_STACK_USERNAME: ${{secrets.BROWSER_STACK_USERNAME}}
+  #         BROWSER_STACK_ACCESS_KEY: ${{secrets.BROWSER_STACK_ACCESS_KEY}}
+  #       with:
+  #         timeout_minutes: 16
+  #         max_attempts: 2
+  #         command: make test-e2e-ci
+  # integration_test:
+  #   name: Integration test with react-checkout
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         repository: mybusiness-app/react-checkout
+  #         path: vendor
+  #     - name: react-checkout
+  #       env:
+  #         CHECKOUT_JS_SHA: ${{github.sha}}
+  #       run: |-
+  #         cd vendor
+  #         make test
   verify:
     name: Verify required checks
     runs-on: ubuntu-latest

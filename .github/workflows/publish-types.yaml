@@ -39,7 +39,7 @@ jobs:
           path: DefinitelyTyped
           commit-message: Updates checkout-js types
           branch: update-checkout-js-${{ steps.create-changes.outputs.version }}
-          push-to-fork: checkout/DefinitelyTyped
+          push-to-fork: mybusiness-app/DefinitelyTyped
           token: ${{ secrets.DEFINITELY_TYPED_PR_GITHUB_ACCESS_TOKEN }}
           title: Updates types for Checkout.js v${{ steps.create-changes.outputs.version }}
           body: |

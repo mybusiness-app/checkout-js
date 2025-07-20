@@ -202,7 +202,7 @@ describe('Checkout.AlternativePaymentMethods', () => {
       context('when success loading all the libs', () => {
         let webComponent;
         let dropIn;
-        let checkout;
+        let _checkout;
 
         beforeEach(() => {
           sandbox.stub(checkout.request, 'get').resolves(response);
@@ -211,8 +211,8 @@ describe('Checkout.AlternativePaymentMethods', () => {
 
           webComponent = { handleAction: sandbox.stub().resolves({  }) };
           dropIn = { mount: sandbox.stub().returns(webComponent) };
-          checkout = { create: sandbox.stub().returns(dropIn) };
-          window.AdyenCheckout = sandbox.stub().resolves(checkout);
+          _checkout = { create: sandbox.stub().returns(dropIn) };
+          window.AdyenCheckout = sandbox.stub().resolves(_checkout);
         });
 
         afterEach(() => {
@@ -236,8 +236,8 @@ describe('Checkout.AlternativePaymentMethods', () => {
               assert.ok(adyenCheckoutArgs.onSubmit);
               assert.ok(adyenCheckoutArgs.onError);
 
-              assert.equal(checkout.create.called, true);
-              assert.equal(checkout.create.getCall(0).args[0], 'dropin');
+              assert.equal(_checkout.create.called, true);
+              assert.equal(_checkout.create.getCall(0).args[0], 'dropin');
 
               assert.equal(dropIn.mount.called, true);
               assert.equal(dropIn.mount.getCall(0).args[0], 'my-div');

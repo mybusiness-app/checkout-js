@@ -156,7 +156,7 @@ jobs:
       - name: Build
         run: make build
       - name: Run tests
-        run: make test-unit-ci
+        run: make test-unit-cov-ci
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         env:
